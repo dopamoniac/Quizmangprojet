@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PMI: Cognitive Learning System v2</title>
+    <title>PMI: Cognitive Learning System v3</title>
     <style>
         /* --- CORE VARIABLES & THEME --- */
         :root {
@@ -11,7 +11,7 @@
             --bg-panel: #0f1016;
             --bg-card: #161821;
             --primary-neon: #00f3ff;
-            --secondary-neon: #bc13fe; /* Purple */
+            --secondary-neon: #bc13fe;
             --success-neon: #0aff60;
             --error-neon: #ff3e3e;
             --text-main: #e0e0e0;
@@ -38,11 +38,12 @@
         
         /* --- SIDEBAR --- */
         aside {
-            width: 260px;
+            width: 280px;
             background: var(--bg-panel);
             border-right: 1px solid var(--border-color);
             display: flex; flex-direction: column;
             padding: 2rem 1rem; z-index: 10;
+            overflow-y: auto;
         }
         .brand { font-size: 0.9rem; font-weight: 700; color: var(--primary-neon); margin-bottom: 3rem; display: flex; align-items: center; gap: 10px; }
         .brand span { display: inline-block; width: 10px; height: 10px; background: var(--primary-neon); box-shadow: 0 0 10px var(--primary-neon); }
@@ -59,33 +60,23 @@
         .mastery-label { font-size: 0.75rem; text-transform: uppercase; color: var(--text-muted); }
         .mastery-value { font-size: 1.2rem; font-weight: bold; color: var(--secondary-neon); }
 
-        /* --- LOGO / CREDIT STYLE --- */
         .dev-credit {
-            margin-top: 2rem;
-            padding-top: 1rem;
-            border-top: 1px solid rgba(255,255,255,0.1);
-            text-align: center;
-            font-family: var(--font-mono);
-            font-size: 0.7rem;
-            color: var(--text-muted);
-            text-transform: uppercase;
-            letter-spacing: 1px;
+            margin-top: 2rem; padding-top: 1rem; border-top: 1px solid rgba(255,255,255,0.1);
+            text-align: center; font-family: var(--font-mono); font-size: 0.7rem;
+            color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px;
         }
-        .dev-credit span {
-            color: var(--secondary-neon);
-            font-weight: bold;
-        }
+        .dev-credit span { color: var(--secondary-neon); font-weight: bold; }
 
         /* --- MAIN CONTENT --- */
         main { flex: 1; position: relative; overflow-y: auto; background: radial-gradient(circle at top right, #13151f 0%, var(--bg-deep) 40%); padding: 2rem 3rem; }
 
         /* --- VIEWS --- */
-        .view { display: none; opacity: 0; transform: translateY(10px); transition: opacity 0.4s ease, transform 0.4s ease; max-width: 1200px; margin: 0 auto; }
+        .view { display: none; opacity: 0; transform: translateY(10px); transition: opacity 0.4s ease, transform 0.4s ease; max-width: 1200px; margin: 0 auto; padding-bottom: 50px; }
         .view.active { display: block; opacity: 1; transform: translateY(0); }
 
         h1, h2, h3 { font-weight: 300; letter-spacing: 1px; }
-        h1 { font-size: 1.5rem; color: var(--primary-neon); text-transform: uppercase; }
-        h2 { font-size: 1.2rem; color: var(--text-main); margin-bottom: 1rem; }
+        h1 { font-size: 1.5rem; color: var(--primary-neon); text-transform: uppercase; margin-bottom: 1rem; }
+        h2 { font-size: 1.2rem; color: var(--text-main); margin-bottom: 1rem; border-bottom: 1px solid var(--border-color); padding-bottom: 0.5rem; }
         p { line-height: 1.6; color: var(--text-muted); margin-bottom: 0.8rem; }
 
         /* --- DASHBOARD --- */
@@ -105,7 +96,6 @@
         .btn-nav:hover { background: var(--primary-neon); color: #000; }
 
         /* --- CHAPTER --- */
-        .chapter-header { margin-bottom: 2rem; border-bottom: 1px solid var(--border-color); padding-bottom: 1rem; }
         .summary-box { background: rgba(255,255,255,0.02); padding: 1.5rem; border-left: 3px solid var(--secondary-neon); margin-bottom: 2rem; }
         .concept-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1rem; margin-bottom: 3rem; }
         .concept-card { background: var(--bg-card); padding: 1rem; border: 1px solid var(--border-color); cursor: pointer; }
@@ -142,6 +132,107 @@
         .breakdown-item strong.red { color: var(--error-neon); }
 
         .hidden { display: none !important; }
+
+        /* --- GLOBAL REVIEW & WBS SCHEMA (CSS ONLY) --- */
+        .review-container { max-width: 100%; }
+        
+        /* Timeline Styles */
+        .timeline-item {
+            border-left: 2px solid var(--primary-neon);
+            padding-left: 20px;
+            margin-bottom: 40px;
+            position: relative;
+        }
+        .timeline-item::before {
+            content: ''; position: absolute; left: -6px; top: 0;
+            width: 10px; height: 10px; background: var(--bg-deep);
+            border: 2px solid var(--primary-neon); border-radius: 50%;
+        }
+        .phase-badge {
+            background: rgba(0, 243, 255, 0.1); color: var(--primary-neon);
+            padding: 4px 8px; border-radius: 4px; font-family: var(--font-mono); font-size: 0.7rem;
+            margin-bottom: 5px; display: inline-block;
+        }
+
+        /* WBS Tree CSS */
+        .wbs-wrapper {
+            overflow-x: auto;
+            padding: 40px 0;
+            background: rgba(255,255,255,0.02);
+            border-radius: 8px;
+            margin-bottom: 3rem;
+            text-align: center;
+        }
+        
+        .tree ul {
+            padding-top: 20px; position: relative;
+            transition: all 0.5s;
+            display: flex; justify-content: center;
+        }
+        .tree li {
+            float: left; text-align: center;
+            list-style-type: none;
+            position: relative;
+            padding: 20px 5px 0 5px;
+            transition: all 0.5s;
+        }
+        /* Connectors */
+        .tree li::before, .tree li::after {
+            content: ''; position: absolute; top: 0; right: 50%;
+            border-top: 1px solid var(--border-color);
+            width: 50%; height: 20px;
+        }
+        .tree li::after {
+            right: auto; left: 50%;
+            border-left: 1px solid var(--border-color);
+        }
+        /* Remove connectors from first/last */
+        .tree li:only-child::after, .tree li:only-child::before { display: none; }
+        .tree li:only-child { padding-top: 0; }
+        .tree li:first-child::before, .tree li:last-child::after { border: 0 none; }
+        .tree li:last-child::before { border-right: 1px solid var(--border-color); border-radius: 0 5px 0 0; }
+        .tree li:first-child::after { border-radius: 5px 0 0 0; }
+        /* Vertical connector down from parent */
+        .tree ul ul::before {
+            content: ''; position: absolute; top: 0; left: 50%;
+            border-left: 1px solid var(--border-color);
+            width: 0; height: 20px;
+        }
+
+        /* Nodes */
+        .tree li span {
+            border: 1px solid var(--border-color);
+            padding: 10px 15px;
+            text-decoration: none;
+            color: var(--text-main);
+            font-family: var(--font-mono);
+            font-size: 0.8rem;
+            display: inline-block;
+            background: var(--bg-panel);
+            border-radius: 5px;
+            transition: all 0.3s;
+            min-width: 120px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+        .tree li span:hover {
+            background: var(--primary-neon);
+            color: #000;
+            border-color: var(--primary-neon);
+            transform: scale(1.05);
+            box-shadow: 0 0 10px var(--primary-neon);
+        }
+
+        /* Specific Node Colors for WBS Levels */
+        .tree > ul > li > span {
+            background: var(--secondary-neon); color: white; border: none; font-weight: bold;
+        }
+        .tree > ul > li > ul > li > span {
+            border-color: var(--primary-neon); color: var(--primary-neon);
+        }
+        .tree > ul > li > ul > li > ul > li > span {
+            border-color: var(--text-muted);
+        }
+
     </style>
 </head>
 <body>
@@ -152,6 +243,8 @@
         <div class="brand"><span></span> ECUEF531</div>
         <nav>
             <button id="nav-dashboard" class="active" onclick="router.navigate('dashboard')">Tableau de bord</button>
+            <button id="nav-review" onclick="router.navigate('review')">📖 Révision Globale</button>
+            <div style="margin: 1rem 0 0.5rem 0.5rem; font-size:0.7rem; color:var(--text-muted); text-transform:uppercase;">Chapitres</div>
             <button id="nav-ch1" onclick="router.navigate('chapter', 1)">1. Notion de Projet</button>
             <button id="nav-ch2" onclick="router.navigate('chapter', 2)">2. Intégration</button>
             <button id="nav-ch3" onclick="router.navigate('chapter', 3)">3. Périmètre</button>
@@ -165,11 +258,7 @@
         <div style="margin-top: 1rem;">
             <button class="btn-cta" onclick="router.startExam()" style="border-color: var(--secondary-neon); color: var(--secondary-neon);">EXAMEN FINAL</button>
         </div>
-        
-        <!-- LOGO / CREDIT SECTION -->
-        <div class="dev-credit">
-            Dev by <span>Dopaem</span>
-        </div>
+        <div class="dev-credit">Dev by <span>Dopaem</span></div>
     </aside>
 
     <!-- MAIN -->
@@ -201,11 +290,152 @@
             </div>
         </section>
 
+        <!-- GLOBAL REVIEW VIEW -->
+        <section id="view-review" class="view">
+            <header>
+                <h1>Révision Globale & Architecture</h1>
+                <p>Synthèse Cognitive du Cycle de Vie et Structure WBS</p>
+            </header>
+
+            <div class="review-container">
+                <!-- Intro: The Big Picture -->
+                <div class="summary-box" style="margin-top: 2rem; border-left-color: var(--primary-neon);">
+                    <h3 style="color:var(--primary-neon)">Le Modèle Mental du Projet</h3>
+                    <p>Un projet n'est pas une liste de tâches, c'est un système temporaire visant à créer une valeur unique. La réussite repose sur l'équilibre dynamique entre <strong>Contenu</strong>, <strong>Délais</strong> et <strong>Coûts</strong>, piloté par une <strong>Intégration</strong> rigoureuse.</p>
+                </div>
+
+                <!-- Timeline of the 5 Process Groups -->
+                <h2 style="margin-top: 3rem;">Cycle de Vie : Les 5 Groupes</h2>
+                <div class="timeline-item">
+                    <div class="phase-badge">GROUPE 1</div>
+                    <h3>Démarrage (Initiation)</h3>
+                    <p>Définir le nouveau projet ou une nouvelle phase en obtenant l'autorisation pour commencer le projet ou la phase.</p>
+                    <div class="concept-card" style="display:inline-block; width:auto; margin-right:10px;">
+                        <div class="concept-title">Livrable Clé</div>
+                        <div class="concept-desc">Charte du Projet</div>
+                    </div>
+                    <div class="concept-card" style="display:inline-block; width:auto;">
+                        <div class="concept-title">Action</div>
+                        <div class="concept-desc">Identifier les parties prenantes</div>
+                    </div>
+                </div>
+
+                <div class="timeline-item">
+                    <div class="phase-badge" style="background:rgba(188, 19, 254, 0.1); color:var(--secondary-neon);">GROUPE 2</div>
+                    <h3>Planification</h3>
+                    <p>Établir la portée totale, les objectifs et le cours d'action requis pour atteindre les objectifs.</p>
+                    <div class="concept-card" style="display:inline-block; width:auto; margin-right:10px;">
+                        <div class="concept-title">Livrable Clé</div>
+                        <div class="concept-desc">Plan de Management (PMP)</div>
+                    </div>
+                    <div class="concept-card" style="display:inline-block; width:auto;">
+                        <div class="concept-title">Sous-processus</div>
+                        <div class="concept-desc">Contenu, Coûts, Délais, Qualité</div>
+                    </div>
+                </div>
+
+                <div class="timeline-item">
+                    <div class="phase-badge" style="background:rgba(10, 255, 96, 0.1); color:var(--success-neon);">GROUPE 3</div>
+                    <h3>Exécution</h3>
+                    <p>Accomplir le travail défini dans le plan de management de projet pour satisfaire aux spécifications du projet.</p>
+                </div>
+
+                <div class="timeline-item">
+                    <div class="phase-badge">GROUPE 4</div>
+                    <h3>Surveillance et Maîtrise</h3>
+                    <p>Suivre l'avancement, identifier les écarts et apporter les corrections nécessaires.</p>
+                    <div class="concept-card" style="display:inline-block; width:auto;">
+                        <div class="concept-title">Livrable Clé</div>
+                        <div class="concept-desc">Prévisions, Rapports de performance</div>
+                    </div>
+                </div>
+
+                <div class="timeline-item">
+                    <div class="phase-badge" style="border: 1px solid var(--text-muted); color:var(--text-main);">GROUPE 5</div>
+                    <h3>Clôture</h3>
+                    <p>Finaliser toutes les activités de tous les groupes de processus pour clore formellement le projet ou une phase.</p>
+                    <div class="concept-card" style="display:inline-block; width:auto;">
+                        <div class="concept-title">Actions</div>
+                        <div class="concept-desc">Clôture Administrative & Contractuelle</div>
+                    </div>
+                </div>
+
+                <!-- WBS SCHEMA -->
+                <h2 style="margin-top: 4rem;">Structure WBS (Work Breakdown Structure)</h2>
+                <p style="margin-bottom: 2rem;">Décomposition hiérarchique orientée livrable du travail total.</p>
+                
+                <div class="wbs-wrapper">
+                    <div class="tree">
+                        <ul>
+                            <li><span>PROJET GLOBAL</span>
+                                <ul>
+                                    <li><span>1. Gestion de Projet</span>
+                                        <ul>
+                                            <li><span>Planification</span></li>
+                                            <li><span>Contrôle Qualité</span></li>
+                                            <li><span>Rapports</span></li>
+                                        </ul>
+                                    </li>
+                                    <li><span>2. Phase 1: Étude</span>
+                                        <ul>
+                                            <li><span>Analyse Besoins</span></li>
+                                            <li><span>Conception</span></li>
+                                            <li><span>Validation</span></li>
+                                        </ul>
+                                    </li>
+                                    <li><span>3. Phase 2: Développement</span>
+                                        <ul>
+                                            <li><span>Frontend</span></li>
+                                            <li><span>Backend</span></li>
+                                            <li><span>Base de Données</span></li>
+                                        </ul>
+                                    </li>
+                                    <li><span>4. Phase 3: Livraison</span>
+                                        <ul>
+                                            <li><span>Tests Finaux</span></li>
+                                            <li><span>Déploiement</span></li>
+                                            <li><span>Formation</span></li>
+                                        </ul>
+                                    </li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Methodology Comparison -->
+                <h2 style="margin-top: 3rem;">Approche : Agile vs Prédictive</h2>
+                <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                    <div class="card" style="border-top: 3px solid var(--primary-neon);">
+                        <h3 style="color:var(--primary-neon)">Prédictive (Waterfall)</h3>
+                        <p style="font-size:0.8rem">Pour des projets stables et bien définis.</p>
+                        <ul style="list-style:none; font-size:0.8rem; color:var(--text-muted); text-align:left; padding-left:10px;">
+                            <li>• Planification détaillée en amont</li>
+                            <li>• Séquence stricte (Phases)</li>
+                            <li>• Changements difficiles en cours de route</li>
+                        </ul>
+                    </div>
+                    <div class="card" style="border-top: 3px solid var(--secondary-neon);">
+                        <h3 style="color:var(--secondary-neon)">Adaptative (Agile)</h3>
+                        <p style="font-size:0.8rem">Pour des projets incertains et évolutifs.</p>
+                        <ul style="list-style:none; font-size:0.8rem; color:var(--text-muted); text-align:left; padding-left:10px;">
+                            <li>• Itérations courtes (Sprints)</li>
+                            <li>• Collaboration client continue</li>
+                            <li>• Élaboration progressive</li>
+                        </ul>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
         <!-- CHAPTER VIEW -->
         <section id="view-chapter" class="view">
+            <div style="margin-bottom: 2rem;">
+                <button onclick="router.navigate('dashboard')" style="background:none; border:none; color:var(--text-muted); cursor:pointer;">&larr; Retour</button>
+            </div>
             <div class="chapter-header">
                 <h1 id="ch-title">Chapitre X</h1>
-                <button onclick="router.navigate('dashboard')" style="background:none; border:none; color:var(--primary-neon); cursor:pointer;">&larr; Retour</button>
             </div>
             <article class="summary-box"><h3 style="color:var(--secondary-neon)">Synthèse Cognitive</h3><div id="ch-summary"></div></article>
             <div class="concept-grid" id="ch-concepts"></div>
@@ -236,7 +466,6 @@
         <!-- EXAM OVERLAY -->
         <div id="exam-overlay" class="exam-overlay hidden">
             <div class="exam-header">
-                <!-- Added credit here as well for visibility during exam -->
                 <div class="brand" style="margin:0; font-size: 0.8rem; display:flex; gap:15px;">
                     <span style="background:var(--secondary-neon)"></span> 
                     <span>EXAMEN FINAL (100 Questions)</span>
@@ -285,9 +514,7 @@
 </div>
 
 <script>
-/**
- * RAW DATA (Extrait du document fourni)
- */
+/* --- DATA & LOGIC --- */
 const rawCourseData = {
     1: {
         title: "La Notion de Projet",
@@ -400,65 +627,37 @@ const rawCourseData = {
     }
 };
 
-/**
- * LOGIC: QUESTION EXPANDER TO REACH 35
- * Génère des questions Vrai/Faux basées sur les concepts pour combler le manque.
- */
 function expandQuestions(chapterId) {
     const ch = rawCourseData[chapterId];
     let finalQuestions = [...ch.baseQuestions];
-    
-    // Helper pour créer une Q True/False
     const createTF = (statement, isTrue) => {
-        return {
-            q: statement,
-            options: ["Vrai", "Faux"],
-            ans: isTrue ? 0 : 1
-        };
+        return { q: statement, options: ["Vrai", "Faux"], ans: isTrue ? 0 : 1 };
     };
-
-    // Générer des Q à partir des concepts
     ch.concepts.forEach(c => {
         if (finalQuestions.length >= 35) return;
-        // Extraire la première phrase du concept
         const statement = c.desc;
-        // Créer une vraie question
         finalQuestions.push(createTF(`${c.title} : ${statement}`, true));
-        
         if (finalQuestions.length >= 35) return;
-        // Créer une fausse question (inverser un mot clé)
         finalQuestions.push(createTF(`${c.title} : ${statement}`, false));
     });
-
-    // Si toujours pas assez (pour le prototype), dupliquer des existantes avec variations
     while (finalQuestions.length < 35) {
         const original = finalQuestions[finalQuestions.length % finalQuestions.length];
         const copy = { ...original, q: original.q + " (Vérification)" }; 
         finalQuestions.push(copy);
     }
-
     return finalQuestions.slice(0, 35);
 }
-
-// Expand all course data on load
 Object.keys(rawCourseData).forEach(k => {
     rawCourseData[k].questions = expandQuestions(parseInt(k));
 });
 
-
-/**
- * STATE & ROUTER
- */
-const appState = {
-    scores: { 1:0, 2:0, 3:0, 4:0, 5:0 },
-    mastery: { 1:0, 2:0, 3:0, 4:0, 5:0 },
-    currentView: 'dashboard'
-};
+const appState = { scores: { 1:0, 2:0, 3:0, 4:0, 5:0 }, mastery: { 1:0, 2:0, 3:0, 4:0, 5:0 }, currentView: 'dashboard' };
 
 const router = {
     navigate: (viewId, chapterId = null) => {
         document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
         if (viewId === 'dashboard') document.getElementById('nav-dashboard').classList.add('active');
+        if (viewId === 'review') document.getElementById('nav-review').classList.add('active');
         if (viewId === 'chapter' && chapterId) document.getElementById(`nav-ch${chapterId}`).classList.add('active');
 
         document.querySelectorAll('.view').forEach(v => {
@@ -466,16 +665,14 @@ const router = {
             setTimeout(() => { if(!v.classList.contains('active')) v.classList.add('hidden'); }, 400);
         });
 
-        const target = document.getElementById(viewId === 'chapter' ? 'view-chapter' : (viewId === 'quiz' ? 'view-quiz' : (viewId === 'results' ? 'view-results' : 'view-dashboard')));
+        const target = document.getElementById(viewId === 'chapter' ? 'view-chapter' : (viewId === 'quiz' ? 'view-quiz' : (viewId === 'results' ? 'view-results' : (viewId === 'review' ? 'view-review' : 'view-dashboard'))));
         if (target) {
             target.classList.remove('hidden');
             setTimeout(() => target.classList.add('active'), 50);
         }
-
         if (viewId === 'dashboard') dashboardController.render();
         if (viewId === 'chapter' && chapterId) chapterController.load(chapterId);
     },
-
     startExam: () => {
         if(confirm("Lancer l'examen final de 100 questions ?")) {
             document.getElementById('exam-overlay').classList.remove('hidden');
@@ -484,43 +681,32 @@ const router = {
     }
 };
 
-/**
- * DASHBOARD
- */
 const dashboardController = {
     render: () => {
         let totalMastery = 0;
         for (let i = 1; i <= 5; i++) {
             const score = appState.scores[i];
-            // Calcule % sur base de 35 questions
             const percent = score > 0 ? Math.round((score / 35) * 100) : 0;
             appState.mastery[i] = percent;
             totalMastery += percent;
-            
             const circle = document.getElementById(`prog-ch${i}`);
             if (circle) circle.textContent = `${percent}%`;
         }
-        
         const global = Math.round(totalMastery / 5);
         const masteryEl = document.getElementById('global-mastery');
         masteryEl.textContent = `${global}%`;
-        
         if (global < 50) masteryEl.style.color = 'var(--error-neon)';
         else if (global < 80) masteryEl.style.color = 'var(--primary-neon)';
         else masteryEl.style.color = 'var(--success-neon)';
     }
 };
 
-/**
- * CHAPTER CONTROLLER
- */
 const chapterController = {
     load: (id) => {
         chapterController.currentChapter = id;
         const data = rawCourseData[id];
         document.getElementById('ch-title').textContent = `Chapitre 0${id}: ${data.title}`;
         document.getElementById('ch-summary').innerHTML = `<p>${data.summary}</p>`;
-        
         const conceptContainer = document.getElementById('ch-concepts');
         conceptContainer.innerHTML = '';
         data.concepts.forEach(c => {
@@ -532,34 +718,23 @@ const chapterController = {
     }
 };
 
-/**
- * QUIZ ENGINE (Chapter)
- */
 const quizEngine = {
-    questions: [],
-    currentIdx: 0,
-    score: 0,
-    
+    questions: [], currentIdx: 0, score: 0,
     startQuiz: () => {
-        const bank = rawCourseData[chapterController.currentChapter].questions; // Already expanded to 35
+        const bank = rawCourseData[chapterController.currentChapter].questions; 
         quizEngine.questions = bank; 
-        
-        quizEngine.currentIdx = 0;
-        quizEngine.score = 0;
+        quizEngine.currentIdx = 0; quizEngine.score = 0;
         router.navigate('quiz');
         quizEngine.renderQuestion();
     },
-
     renderQuestion: () => {
         const q = quizEngine.questions[quizEngine.currentIdx];
         document.getElementById('quiz-progress-q').textContent = `Question ${quizEngine.currentIdx + 1}/35`;
         document.getElementById('quiz-current-score').textContent = quizEngine.score;
         document.getElementById('quiz-question').textContent = q.q;
-        
         const optsContainer = document.getElementById('quiz-options');
         optsContainer.innerHTML = '';
         document.getElementById('quiz-feedback').classList.add('hidden');
-
         q.options.forEach((opt, idx) => {
             const btn = document.createElement('button');
             btn.className = 'option-btn';
@@ -567,21 +742,16 @@ const quizEngine = {
             btn.onclick = () => quizEngine.handleAnswer(idx, btn);
             optsContainer.appendChild(btn);
         });
-
         document.getElementById('quiz-timer').style.width = '0%';
         setTimeout(() => document.getElementById('quiz-timer').style.width = '100%', 100);
     },
-
     handleAnswer: (selectedIdx, btnElement) => {
         const allBtns = document.querySelectorAll('#quiz-options .option-btn');
         allBtns.forEach(b => b.onclick = null);
-
         const q = quizEngine.questions[quizEngine.currentIdx];
         const isCorrect = selectedIdx === q.ans;
-
         if (isCorrect) {
-            btnElement.classList.add('correct');
-            quizEngine.score++;
+            btnElement.classList.add('correct'); quizEngine.score++;
             document.getElementById('feedback-title').textContent = "CORRECT";
             document.getElementById('feedback-title').style.color = "var(--success-neon)";
         } else {
@@ -590,21 +760,15 @@ const quizEngine = {
             document.getElementById('feedback-title').textContent = "INCORRECT";
             document.getElementById('feedback-title').style.color = "var(--error-neon)";
         }
-        
         document.getElementById('quiz-current-score').textContent = quizEngine.score;
         const fb = document.getElementById('quiz-feedback');
         fb.classList.remove('hidden');
     },
-
     nextQuestion: () => {
         quizEngine.currentIdx++;
-        if (quizEngine.currentIdx < quizEngine.questions.length) {
-            quizEngine.renderQuestion();
-        } else {
-            quizEngine.finish();
-        }
+        if (quizEngine.currentIdx < quizEngine.questions.length) { quizEngine.renderQuestion(); } 
+        else { quizEngine.finish(); }
     },
-
     finish: () => {
         appState.scores[chapterController.currentChapter] = quizEngine.score;
         document.getElementById('view-quiz').classList.remove('active');
@@ -617,62 +781,35 @@ const quizEngine = {
     }
 };
 
-/**
- * EXAM ENGINE (Final)
- */
 const examEngine = {
-    questions: [],
-    currentIdx: 0,
-    answers: [],
-    timerInterval: null,
-    timeLeft: 5400, // 90 mins
-
+    questions: [], currentIdx: 0, answers: [], timerInterval: null, timeLeft: 5400,
     init: () => {
         let allQ = [];
-        for(let i=1; i<=5; i++) {
-            // Prendre les 35 questions générées de chaque chapitre
-            allQ = allQ.concat(rawCourseData[i].questions);
-        }
-        // On a exactement 5 * 35 = 175 questions générées (plus que les 100 demandées).
-        // On en prend 100 aléatoires.
+        for(let i=1; i<=5; i++) allQ = allQ.concat(rawCourseData[i].questions);
         examEngine.questions = allQ.sort(() => 0.5 - Math.random()).slice(0, 100);
-        
-        examEngine.currentIdx = 0;
-        examEngine.answers = new Array(100).fill(null);
-        examEngine.timeLeft = 5400;
-        
-        examEngine.renderQuestion();
-        examEngine.startTimer();
+        examEngine.currentIdx = 0; examEngine.answers = new Array(100).fill(null); examEngine.timeLeft = 5400;
+        examEngine.renderQuestion(); examEngine.startTimer();
     },
-
     renderQuestion: () => {
         const q = examEngine.questions[examEngine.currentIdx];
         document.getElementById('exam-q-num').textContent = examEngine.currentIdx + 1;
         document.getElementById('exam-question').textContent = q.q;
-        
         const optsContainer = document.getElementById('exam-options');
         optsContainer.innerHTML = '';
-
         q.options.forEach((opt, idx) => {
             const btn = document.createElement('button');
             btn.className = 'option-btn';
             btn.textContent = opt;
-            if (examEngine.answers[examEngine.currentIdx] === idx) {
-                btn.classList.add('selected');
-            }
+            if (examEngine.answers[examEngine.currentIdx] === idx) btn.classList.add('selected');
             btn.onclick = () => {
                 document.querySelectorAll('#exam-options .option-btn').forEach(b => b.classList.remove('selected'));
-                btn.classList.add('selected');
-                examEngine.answers[examEngine.currentIdx] = idx;
+                btn.classList.add('selected'); examEngine.answers[examEngine.currentIdx] = idx;
             };
             optsContainer.appendChild(btn);
         });
-
-        // Update Next Button Text
         const btn = document.getElementById('exam-next-btn');
         btn.textContent = (examEngine.currentIdx === 99) ? "Terminer l'examen" : "Suivant";
     },
-
     startTimer: () => {
         if(examEngine.timerInterval) clearInterval(examEngine.timerInterval);
         examEngine.timerInterval = setInterval(() => {
@@ -683,30 +820,16 @@ const examEngine = {
             if(examEngine.timeLeft <= 0) examEngine.submit();
         }, 1000);
     },
-
     nextQuestion: () => {
-        // Si c'est la dernière question (index 99)
-        if (examEngine.currentIdx === 99) {
-            examEngine.submit();
-            return;
-        }
-        examEngine.currentIdx++;
-        examEngine.renderQuestion();
+        if (examEngine.currentIdx === 99) { examEngine.submit(); return; }
+        examEngine.currentIdx++; examEngine.renderQuestion();
     },
-
-    toggleNotes: () => {
-        document.getElementById('exam-notes-panel').classList.toggle('active');
-    },
-
+    toggleNotes: () => { document.getElementById('exam-notes-panel').classList.toggle('active'); },
     submit: () => {
         clearInterval(examEngine.timerInterval);
         if(!confirm("Soumettre l'examen ?")) return;
-
         let correct = 0;
-        examEngine.questions.forEach((q, i) => {
-            if (examEngine.answers[i] === q.ans) correct++;
-        });
-
+        examEngine.questions.forEach((q, i) => { if (examEngine.answers[i] === q.ans) correct++; });
         document.getElementById('exam-overlay').classList.add('hidden');
         document.getElementById('view-results').classList.remove('hidden');
         setTimeout(() => document.getElementById('view-results').classList.add('active'), 50);
@@ -718,28 +841,21 @@ const resultsController = {
     show: (correct, total, type) => {
         const percentage = Math.round((correct / total) * 100);
         const wrong = total - correct;
-
         document.getElementById('res-percentage').textContent = `${percentage}%`;
         document.getElementById('res-correct').textContent = correct;
         document.getElementById('res-wrong').textContent = wrong;
         document.getElementById('res-total').textContent = total;
-
-        let msg = "";
-        let color = "";
+        let msg = ""; let color = "";
         if(percentage >= 80) { msg = "Excellente maîtrise. Prêt pour l'examen."; color = "var(--success-neon)"; }
         else if(percentage >= 50) { msg = "Maîtrise moyenne. Révisez les chapitres faibles."; color = "var(--primary-neon)"; }
         else { msg = "Maîtrise faible. Revoir les synthèses recommandé."; color = "var(--error-neon)"; }
-
         const msgEl = document.getElementById('res-message');
-        msgEl.textContent = msg;
-        msgEl.style.color = color;
+        msgEl.textContent = msg; msgEl.style.color = color;
         document.getElementById('res-percentage').style.color = color;
     }
 };
 
-document.addEventListener('DOMContentLoaded', () => {
-    dashboardController.render();
-});
+document.addEventListener('DOMContentLoaded', () => { dashboardController.render(); });
 </script>
 </body>
 </html>
