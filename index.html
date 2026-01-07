@@ -2,8 +2,8 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PMI: Cognitive Learning System v2</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>PMI: Cognitive Learning System Mobile</title>
     <style>
         /* --- CORE VARIABLES & THEME --- */
         :root {
@@ -11,7 +11,7 @@
             --bg-panel: #0f1016;
             --bg-card: #161821;
             --primary-neon: #00f3ff;
-            --secondary-neon: #bc13fe; /* Purple */
+            --secondary-neon: #bc13fe;
             --success-neon: #0aff60;
             --error-neon: #ff3e3e;
             --text-main: #e0e0e0;
@@ -22,7 +22,7 @@
             --ease-out: cubic-bezier(0.215, 0.61, 0.355, 1);
         }
 
-        * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; }
+        * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; -webkit-tap-highlight-color: transparent; }
         body {
             background-color: var(--bg-deep);
             color: var(--text-main);
@@ -34,16 +34,19 @@
         }
 
         /* --- LAYOUT --- */
-        .app-container { display: flex; height: 100%; width: 100%; }
+        .app-container { display: flex; height: 100%; width: 100%; position: relative; }
         
-        /* --- SIDEBAR --- */
+        /* --- SIDEBAR (Desktop Default) --- */
         aside {
-            width: 260px;
+            width: 280px;
             background: var(--bg-panel);
             border-right: 1px solid var(--border-color);
             display: flex; flex-direction: column;
-            padding: 2rem 1rem; z-index: 10;
+            padding: 2rem 1rem; z-index: 20;
+            transition: transform 0.3s ease;
+            overflow-y: auto;
         }
+
         .brand { font-size: 0.9rem; font-weight: 700; color: var(--primary-neon); margin-bottom: 3rem; display: flex; align-items: center; gap: 10px; }
         .brand span { display: inline-block; width: 10px; height: 10px; background: var(--primary-neon); box-shadow: 0 0 10px var(--primary-neon); }
 
@@ -59,33 +62,49 @@
         .mastery-label { font-size: 0.75rem; text-transform: uppercase; color: var(--text-muted); }
         .mastery-value { font-size: 1.2rem; font-weight: bold; color: var(--secondary-neon); }
 
-        /* --- LOGO / CREDIT STYLE --- */
         .dev-credit {
-            margin-top: 2rem;
-            padding-top: 1rem;
-            border-top: 1px solid rgba(255,255,255,0.1);
-            text-align: center;
-            font-family: var(--font-mono);
-            font-size: 0.7rem;
-            color: var(--text-muted);
-            text-transform: uppercase;
-            letter-spacing: 1px;
+            margin-top: 2rem; padding-top: 1rem; border-top: 1px solid rgba(255,255,255,0.1);
+            text-align: center; font-family: var(--font-mono); font-size: 0.7rem;
+            color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px;
         }
-        .dev-credit span {
-            color: var(--secondary-neon);
-            font-weight: bold;
+        .dev-credit span { color: var(--secondary-neon); font-weight: bold; }
+
+        /* --- MOBILE OVERLAY (Hides content when menu is open) --- */
+        .sidebar-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.7); z-index: 15;
+            display: none; opacity: 0; transition: opacity 0.3s;
+        }
+        .sidebar-overlay.active { display: block; opacity: 1; }
+
+        /* --- MOBILE HEADER (Visible only on small screens) --- */
+        .mobile-header {
+            display: none;
+            padding: 1rem;
+            background: var(--bg-panel);
+            border-bottom: 1px solid var(--border-color);
+            align-items: center;
+            justify-content: space-between;
+            position: absolute; top: 0; left: 0; right: 0; z-index: 10;
+        }
+        .hamburger {
+            font-size: 1.5rem; color: var(--primary-neon); cursor: pointer;
         }
 
         /* --- MAIN CONTENT --- */
-        main { flex: 1; position: relative; overflow-y: auto; background: radial-gradient(circle at top right, #13151f 0%, var(--bg-deep) 40%); padding: 2rem 3rem; }
+        main { 
+            flex: 1; position: relative; overflow-y: auto; 
+            background: radial-gradient(circle at top right, #13151f 0%, var(--bg-deep) 40%); 
+            padding: 2rem 3rem; 
+        }
 
         /* --- VIEWS --- */
-        .view { display: none; opacity: 0; transform: translateY(10px); transition: opacity 0.4s ease, transform 0.4s ease; max-width: 1200px; margin: 0 auto; }
+        .view { display: none; opacity: 0; transform: translateY(10px); transition: opacity 0.4s ease, transform 0.4s ease; max-width: 1200px; margin: 0 auto; padding-bottom: 50px; padding-top: 20px; }
         .view.active { display: block; opacity: 1; transform: translateY(0); }
 
         h1, h2, h3 { font-weight: 300; letter-spacing: 1px; }
-        h1 { font-size: 1.5rem; color: var(--primary-neon); text-transform: uppercase; }
-        h2 { font-size: 1.2rem; color: var(--text-main); margin-bottom: 1rem; }
+        h1 { font-size: 1.5rem; color: var(--primary-neon); text-transform: uppercase; margin-bottom: 1rem; }
+        h2 { font-size: 1.2rem; color: var(--text-main); margin-bottom: 1rem; border-bottom: 1px solid var(--border-color); padding-bottom: 0.5rem; }
         p { line-height: 1.6; color: var(--text-muted); margin-bottom: 0.8rem; }
 
         /* --- DASHBOARD --- */
@@ -105,7 +124,6 @@
         .btn-nav:hover { background: var(--primary-neon); color: #000; }
 
         /* --- CHAPTER --- */
-        .chapter-header { margin-bottom: 2rem; border-bottom: 1px solid var(--border-color); padding-bottom: 1rem; }
         .summary-box { background: rgba(255,255,255,0.02); padding: 1.5rem; border-left: 3px solid var(--secondary-neon); margin-bottom: 2rem; }
         .concept-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1rem; margin-bottom: 3rem; }
         .concept-card { background: var(--bg-card); padding: 1rem; border: 1px solid var(--border-color); cursor: pointer; }
@@ -126,7 +144,7 @@
 
         /* --- EXAM SPECIFIC --- */
         .exam-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg-deep); z-index: 100; display: flex; flex-direction: column; }
-        .exam-header { padding: 1rem 2rem; background: var(--bg-panel); border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; }
+        .exam-header { padding: 1rem 2rem; background: var(--bg-panel); border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; }
         .exam-body { flex: 1; overflow-y: auto; padding: 2rem; display: flex; flex-direction: column; }
         .exam-footer { padding: 2rem; border-top: 1px solid var(--border-color); background: var(--bg-panel); display: flex; justify-content: center; align-items: center; }
         .notes-panel { width: 300px; background: var(--bg-panel); border-left: 1px solid var(--border-color); padding: 1rem; font-family: var(--font-mono); font-size: 0.85rem; display: none; }
@@ -135,48 +153,130 @@
 
         /* --- RESULTS --- */
         .score-display { font-size: 3rem; color: var(--primary-neon); font-family: var(--font-mono); margin: 1rem 0; text-shadow: 0 0 20px rgba(0,243,255,0.3); }
-        .score-breakdown { display: flex; gap: 2rem; justify-content: center; margin-bottom: 2rem; }
+        .score-breakdown { display: flex; gap: 2rem; justify-content: center; margin-bottom: 2rem; flex-wrap: wrap; }
         .breakdown-item span { display: block; font-size: 0.8rem; color: var(--text-muted); }
         .breakdown-item strong { display: block; font-size: 1.2rem; }
         .breakdown-item strong.green { color: var(--success-neon); }
         .breakdown-item strong.red { color: var(--error-neon); }
 
         .hidden { display: none !important; }
+
+        /* --- WBS SCHEMA CSS --- */
+        .review-container { max-width: 100%; }
+        .timeline-item { border-left: 2px solid var(--primary-neon); padding-left: 20px; margin-bottom: 40px; position: relative; }
+        .timeline-item::before { content: ''; position: absolute; left: -6px; top: 0; width: 10px; height: 10px; background: var(--bg-deep); border: 2px solid var(--primary-neon); border-radius: 50%; }
+        .phase-badge { background: rgba(0, 243, 255, 0.1); color: var(--primary-neon); padding: 4px 8px; border-radius: 4px; font-family: var(--font-mono); font-size: 0.7rem; margin-bottom: 5px; display: inline-block; }
+        
+        .wbs-wrapper { overflow-x: auto; padding: 40px 0; background: rgba(255,255,255,0.02); border-radius: 8px; margin-bottom: 3rem; text-align: center; }
+        .tree ul { padding-top: 20px; position: relative; transition: all 0.5s; display: flex; justify-content: center; }
+        .tree li { float: left; text-align: center; list-style-type: none; position: relative; padding: 20px 5px 0 5px; transition: all 0.5s; }
+        .tree li::before, .tree li::after { content: ''; position: absolute; top: 0; right: 50%; border-top: 1px solid var(--border-color); width: 50%; height: 20px; }
+        .tree li::after { right: auto; left: 50%; border-left: 1px solid var(--border-color); }
+        .tree li:only-child::after, .tree li:only-child::before { display: none; }
+        .tree li:only-child { padding-top: 0; }
+        .tree li:first-child::before, .tree li:last-child::after { border: 0 none; }
+        .tree li:last-child::before { border-right: 1px solid var(--border-color); border-radius: 0 5px 0 0; }
+        .tree li:first-child::after { border-radius: 5px 0 0 0; }
+        .tree ul ul::before { content: ''; position: absolute; top: 0; left: 50%; border-left: 1px solid var(--border-color); width: 0; height: 20px; }
+        .tree li span { border: 1px solid var(--border-color); padding: 10px 15px; text-decoration: none; color: var(--text-main); font-family: var(--font-mono); font-size: 0.8rem; display: inline-block; background: var(--bg-panel); border-radius: 5px; transition: all 0.3s; min-width: 120px; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
+        .tree li span:hover { background: var(--primary-neon); color: #000; border-color: var(--primary-neon); transform: scale(1.05); box-shadow: 0 0 10px var(--primary-neon); }
+        .tree > ul > li > span { background: var(--secondary-neon); color: white; border: none; font-weight: bold; }
+        .tree > ul > li > ul > li > span { border-color: var(--primary-neon); color: var(--primary-neon); }
+        .tree > ul > li > ul > li > ul > li > span { border-color: var(--text-muted); }
+
+
+        /* --- RESPONSIVE MEDIA QUERIES (MOBILE) --- */
+        @media (max-width: 768px) {
+            
+            /* Mobile Layout Changes */
+            .app-container { flex-direction: column; }
+            
+            /* Sidebar becomes Off-Canvas Drawer */
+            aside {
+                position: fixed;
+                left: -100%; /* Hidden by default */
+                width: 85%; /* Full width minus small margin */
+                max-width: 300px;
+                height: 100vh;
+                top: 0;
+                background: var(--bg-deep); /* Solid bg for drawer */
+                box-shadow: 5px 0 15px rgba(0,0,0,0.5);
+                z-index: 30; /* Above overlay */
+            }
+            
+            aside.active { left: 0; } /* Show sidebar */
+
+            /* Show Mobile Header */
+            .mobile-header { display: flex; height: 60px; }
+            
+            /* Adjust Main Content */
+            main { padding: 1rem; padding-top: 70px; /* Space for mobile header */ }
+
+            /* Adjust Grids */
+            .dashboard-grid { grid-template-columns: 1fr; }
+            .concept-grid { grid-template-columns: 1fr; }
+            
+            /* Typography Adjustments */
+            h1 { font-size: 1.2rem; }
+            h2 { font-size: 1.1rem; }
+            .question-text { font-size: 1.1rem; min-height: auto; padding: 1rem 0; }
+            
+            /* Adjust Buttons for Touch */
+            .btn-nav, .btn-cta { width: 100%; padding: 1rem; font-size: 0.9rem; }
+            
+            /* Adjust Exam Footer */
+            .exam-footer { padding: 1rem; }
+            .exam-header { flex-direction: column; align-items: flex-start; padding: 1rem; }
+            
+            /* Adjust WBS Tree - Enable Scrolling */
+            .wbs-wrapper { overflow-x: scroll; -webkit-overflow-scrolling: touch; }
+            .tree { min-width: 600px; } /* Ensure tree doesn't squash too much */
+
+            /* Hide large elements on mobile if necessary */
+            .dev-credit { display: none; } /* Move to header or hide to save space */
+        }
     </style>
 </head>
 <body>
 
 <div class="app-container">
+    <!-- MOBILE OVERLAY (Backdrop) -->
+    <div class="sidebar-overlay" id="sidebar-overlay" onclick="toggleMobileMenu()"></div>
+
     <!-- SIDEBAR -->
-    <aside>
+    <aside id="main-sidebar">
         <div class="brand"><span></span> ECUEF531</div>
         <nav>
-            <button id="nav-dashboard" class="active" onclick="router.navigate('dashboard')">Tableau de bord</button>
-            <button id="nav-ch1" onclick="router.navigate('chapter', 1)">1. Notion de Projet</button>
-            <button id="nav-ch2" onclick="router.navigate('chapter', 2)">2. Intégration</button>
-            <button id="nav-ch3" onclick="router.navigate('chapter', 3)">3. Périmètre</button>
-            <button id="nav-ch4" onclick="router.navigate('chapter', 4)">4. Délais & Coûts</button>
-            <button id="nav-ch5" onclick="router.navigate('chapter', 5)">5. Communication</button>
+            <button id="nav-dashboard" class="active" onclick="router.navigate('dashboard'); toggleMobileMenu();">Tableau de bord</button>
+            <button id="nav-review" onclick="router.navigate('review'); toggleMobileMenu();">📖 Révision Globale</button>
+            <div style="margin: 1rem 0 0.5rem 0.5rem; font-size:0.7rem; color:var(--text-muted); text-transform:uppercase;">Chapitres</div>
+            <button id="nav-ch1" onclick="router.navigate('chapter', 1); toggleMobileMenu();">1. Notion de Projet</button>
+            <button id="nav-ch2" onclick="router.navigate('chapter', 2); toggleMobileMenu();">2. Intégration</button>
+            <button id="nav-ch3" onclick="router.navigate('chapter', 3); toggleMobileMenu();">3. Périmètre</button>
+            <button id="nav-ch4" onclick="router.navigate('chapter', 4); toggleMobileMenu();">4. Délais & Coûts</button>
+            <button id="nav-ch5" onclick="router.navigate('chapter', 5); toggleMobileMenu();">5. Communication</button>
         </nav>
         <div class="mastery-indicator">
             <div class="mastery-label">Maîtrise Globale</div>
             <div class="mastery-value" id="global-mastery">0%</div>
         </div>
         <div style="margin-top: 1rem;">
-            <button class="btn-cta" onclick="router.startExam()" style="border-color: var(--secondary-neon); color: var(--secondary-neon);">EXAMEN FINAL</button>
+            <button class="btn-cta" onclick="router.startExam(); toggleMobileMenu();" style="border-color: var(--secondary-neon); color: var(--secondary-neon);">EXAMEN FINAL</button>
         </div>
-        
-        <!-- LOGO / CREDIT SECTION -->
-        <div class="dev-credit">
-            Dev by <span>Dopaem</span>
-        </div>
+        <div class="dev-credit">Dev by <span>Dopaem</span></div>
     </aside>
+
+    <!-- MOBILE HEADER -->
+    <div class="mobile-header">
+        <div class="brand" style="margin:0; font-size:0.9rem;"><span style="background:var(--primary-neon)"></span> ECUEF531</div>
+        <div class="hamburger" onclick="toggleMobileMenu()">&#9776;</div>
+    </div>
 
     <!-- MAIN -->
     <main id="main-content">
         <!-- DASHBOARD -->
         <section id="view-dashboard" class="view active">
-            <header><h1>Module: Management de Projet</h1><p>Système d'Apprentissage Cognitif | Référentiel PMI®</p></header>
+            <header><h1>Module: Management de Projet</h1><p>Système d'Apprentissage Cognitif</p></header>
             <div class="dashboard-grid">
                 <div class="card" onclick="router.navigate('chapter', 1)">
                     <div class="card-header"><span class="card-number">CH 01</span><div class="progress-circle" id="prog-ch1">0%</div></div>
@@ -201,11 +301,100 @@
             </div>
         </section>
 
+        <!-- GLOBAL REVIEW VIEW -->
+        <section id="view-review" class="view">
+            <header>
+                <h1>Révision Globale & Architecture</h1>
+                <p>Synthèse Cognitive du Cycle de Vie et Structure WBS</p>
+            </header>
+
+            <div class="review-container">
+                <div class="summary-box" style="margin-top: 2rem; border-left-color: var(--primary-neon);">
+                    <h3 style="color:var(--primary-neon)">Le Modèle Mental du Projet</h3>
+                    <p>Un projet n'est pas une liste de tâches, c'est un système temporaire visant à créer une valeur unique. La réussite repose sur l'équilibre dynamique entre <strong>Contenu</strong>, <strong>Délais</strong> et <strong>Coûts</strong>, piloté par une <strong>Intégration</strong> rigoureuse.</p>
+                </div>
+
+                <h2 style="margin-top: 3rem;">Cycle de Vie : Les 5 Groupes</h2>
+                <div class="timeline-item">
+                    <div class="phase-badge">GROUPE 1</div>
+                    <h3>Démarrage (Initiation)</h3>
+                    <p>Définir le nouveau projet ou une nouvelle phase en obtenant l'autorisation pour commencer.</p>
+                    <div class="concept-card" style="display:inline-block; width:auto; margin-right:10px;">
+                        <div class="concept-title">Livrable Clé</div>
+                        <div class="concept-desc">Charte du Projet</div>
+                    </div>
+                </div>
+
+                <div class="timeline-item">
+                    <div class="phase-badge" style="background:rgba(188, 19, 254, 0.1); color:var(--secondary-neon);">GROUPE 2</div>
+                    <h3>Planification</h3>
+                    <p>Établir la portée totale, les objectifs et le cours d'action requis.</p>
+                    <div class="concept-card" style="display:inline-block; width:auto; margin-right:10px;">
+                        <div class="concept-title">Livrable Clé</div>
+                        <div class="concept-desc">Plan de Management (PMP)</div>
+                    </div>
+                </div>
+
+                <div class="timeline-item">
+                    <div class="phase-badge" style="background:rgba(10, 255, 96, 0.1); color:var(--success-neon);">GROUPE 3</div>
+                    <h3>Exécution</h3>
+                    <p>Accomplir le travail défini dans le plan de management.</p>
+                </div>
+
+                <div class="timeline-item">
+                    <div class="phase-badge">GROUPE 4</div>
+                    <h3>Surveillance et Maîtrise</h3>
+                    <p>Suivre l'avancement, identifier les écarts et apporter les corrections.</p>
+                </div>
+
+                <div class="timeline-item">
+                    <div class="phase-badge" style="border: 1px solid var(--text-muted); color:var(--text-main);">GROUPE 5</div>
+                    <h3>Clôture</h3>
+                    <p>Finaliser toutes les activités pour clore formellement le projet.</p>
+                </div>
+
+                <!-- WBS SCHEMA -->
+                <h2 style="margin-top: 4rem;">Structure WBS (Work Breakdown Structure)</h2>
+                <p style="margin-bottom: 2rem;">Décomposition hiérarchique orientée livrable du travail total.</p>
+                
+                <div class="wbs-wrapper">
+                    <div class="tree">
+                        <ul>
+                            <li><span>PROJET GLOBAL</span>
+                                <ul>
+                                    <li><span>1. Gestion</span>
+                                        <ul>
+                                            <li><span>Planification</span></li>
+                                            <li><span>Contrôle</span></li>
+                                        </ul>
+                                    </li>
+                                    <li><span>2. Phase 1</span>
+                                        <ul>
+                                            <li><span>Analyse</span></li>
+                                            <li><span>Conception</span></li>
+                                        </ul>
+                                    </li>
+                                    <li><span>3. Phase 2</span>
+                                        <ul>
+                                            <li><span>Dev Front</span></li>
+                                            <li><span>Dev Back</span></li>
+                                        </ul>
+                                    </li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
         <!-- CHAPTER VIEW -->
         <section id="view-chapter" class="view">
+            <div style="margin-bottom: 2rem;">
+                <button onclick="router.navigate('dashboard')" style="background:none; border:none; color:var(--text-muted); cursor:pointer;">&larr; Retour</button>
+            </div>
             <div class="chapter-header">
                 <h1 id="ch-title">Chapitre X</h1>
-                <button onclick="router.navigate('dashboard')" style="background:none; border:none; color:var(--primary-neon); cursor:pointer;">&larr; Retour</button>
             </div>
             <article class="summary-box"><h3 style="color:var(--secondary-neon)">Synthèse Cognitive</h3><div id="ch-summary"></div></article>
             <div class="concept-grid" id="ch-concepts"></div>
@@ -236,18 +425,17 @@
         <!-- EXAM OVERLAY -->
         <div id="exam-overlay" class="exam-overlay hidden">
             <div class="exam-header">
-                <!-- Added credit here as well for visibility during exam -->
-                <div class="brand" style="margin:0; font-size: 0.8rem; display:flex; gap:15px;">
+                <div class="brand" style="margin:0; font-size: 0.8rem; display:flex; gap:15px; width: 100%;">
                     <span style="background:var(--secondary-neon)"></span> 
-                    <span>EXAMEN FINAL (100 Questions)</span>
+                    <span style="font-size:0.9rem;">EXAMEN FINAL (100 Questions)</span>
                     <span style="font-weight:400; opacity:0.5; margin-left:auto;">| Dev by Dopaem</span>
                 </div>
-                <div style="font-family:var(--font-mono); color:var(--primary-neon);">
+                <div style="font-family:var(--font-mono); color:var(--primary-neon); margin-top:0.5rem;">
                     <span id="exam-timer">01:30:00</span>
                     <button onclick="examEngine.toggleNotes()" style="background:transparent; border:1px solid var(--border-color); color:var(--text-muted); cursor:pointer; margin-left: 10px; padding: 5px 10px;">NOTES</button>
                 </div>
             </div>
-            <div style="display:flex; flex:1; overflow:hidden;">
+            <div style="display:flex; flex:1; overflow:hidden; flex-direction:column;">
                 <div class="exam-body">
                     <div class="exam-body-inner">
                         <h2 style="color:var(--text-muted)">Question <span id="exam-q-num">1</span>/100</h2>
@@ -285,180 +473,111 @@
 </div>
 
 <script>
-/**
- * RAW DATA (Extrait du document fourni)
- */
+/* --- DATA & LOGIC --- */
 const rawCourseData = {
     1: {
         title: "La Notion de Projet",
-        summary: "Un projet est une entreprise temporaire décidée dans le but de créer un produit, service ou résultat unique. Il se distingue des opérations courantes par sa nature temporaire (début et fin définis) et son livrable unique. Le management de projet vise l'équilibre entre la Contenu (Scope), le Délai et le Coût (Triple Contrainte).",
+        summary: "Un projet est une entreprise temporaire décidée dans le but de créer un produit, service ou résultat unique. Il se distingue des opérations courantes par sa nature temporaire (début et fin définis) et son livrable unique.",
         concepts: [
-            { title: "Caractéristiques Projet", desc: "Temporaire (début/fin), Livrable Unique, Élaboration Progressive." },
-            { title: "Produit vs Projet", desc: "Le produit est le livrable final (bâtiment, logiciel), le projet est le processus de création." },
-            { title: "Triple Contrainte", desc: "L'équilibre entre Contenu, Délai et Coût. Si l'un varie, les autres sont affectés." },
-            { title: "Agile vs Prédictive", desc: "Prédictive: travail définissable, planifié. Agile: travail incertain, itératif, adaptatif." },
-            { title: "Parties Prenantes", desc: "Individus ou organismes affectés par le projet (Client, Sponsor, Équipe)." },
-            { title: "Elaboration Progressive", desc: "Développement par étape, contenu défini de manière peu détaillée au début et plus explicite au fur et à mesure." },
-            { title: "Livrable", desc: "Tout produit, résultat ou capacité unique, vérifiable, qui doit être produit pour achever un processus, une phase ou un projet." }
+            { title: "Caractéristiques", desc: "Temporaire, Livrable Unique, Élaboration Progressive." },
+            { title: "Triple Contrainte", desc: "Contenu, Délai et Coût." },
+            { title: "Agile vs Prédictive", desc: "Incertitude vs Définition." },
+            { title: "Parties Prenantes", desc: "Personnes affectées par le projet." }
         ],
         baseQuestions: [
-            { q: "Qu'est-ce qui caractérise un projet par rapport aux opérations ?", options: ["Récurrent", "Temporaire", "Permanent", "Linéaire"], ans: 1 },
-            { q: "La triple contrainte du projet inclut généralement :", options: ["Qualité, Vitesse, Coût", "Contenu, Délai, Coût", "Risque, Qualité, Temps", "Plan, Exécution, Contrôle"], ans: 1 },
-            { q: "Qu'est-ce que l'élaboration progressive ?", options: ["Allonger le délai", "Définir progressivement le contenu", "Augmenter le budget", "Réduire l'équipe"], ans: 1 },
-            { q: "Quel approche est recommandée pour un travail fortement incertain ?", options: ["Prédictive", "Hybride uniquement", "Agile/Adaptative", "En cascade"], ans: 2 },
-            { q: "Un livrable peut-il durer des siècles ?", options: ["Non", "Oui (ex: Monument)", "Seulement si digital", "Oui, c'est le projet qui dure"], ans: 1 },
-            { q: "Dans l'approche Agile, le travail est divisé en :", options: ["Phases longues", "Itérations (Sprints)", "Jalons annuels", "Contrats fermes"], ans: 1 },
-            { q: "Lequel n'est pas un principe de management de projet ?", options: ["Favoriser le changement", "Ignorer les parties prenantes", "Se concentrer sur la valeur", "Être un leader"], ans: 1 },
-            { q: "Le projet est autorisé par :", options: ["L'équipe", "Un besoin/Idée/Obligation", "Le hasard", "Le logiciel"], ans: 1 }
+            { q: "Qu'est-ce qui caractérise un projet ?", options: ["Récurrent", "Temporaire", "Permanent", "Linéaire"], ans: 1 },
+            { q: "La triple contrainte inclut :", options: ["Contenu, Délai, Coût", "Risque, Qualité, Temps", "Plan, Exécution, Contrôle", "Vitesse, Coût, Qualité"], ans: 0 },
+            { q: "Qu'est-ce que l'élaboration progressive ?", options: ["Augmenter budget", "Définir contenu par étape", "Réduire l'équipe", "Planifier tout au début"], ans: 1 },
+            { q: "Approche pour travail incertain ?", options: ["Prédictive", "Agile/Adaptative", "En cascade", "Hybride uniquement"], ans: 1 },
+            { q: "Un livrable peut-il durer longtemps ?", options: ["Non", "Oui (ex: Monument)", "Seulement digital", "C'est le projet"], ans: 1 },
+            { q: "Projet autorisé par :", options: ["L'équipe", "Besoin/Idée/Obligation", "Le hasard", "Le logiciel"], ans: 1 }
         ]
     },
     2: {
         title: "Management de l'Intégration",
-        summary: "L'intégration consiste à identifier, définir, combiner, unifier et coordonner tous les processus de management. Elle inclut l'élaboration de la Charte du projet (autorisation), du Plan de Management (stratégie), la direction du travail, la maîtrise des changements et la clôture (administrative et contractuelle).",
+        summary: "Coordonner tous les processus de management. De la Charte à la Clôture.",
         concepts: [
-            { title: "Charte du Projet", desc: "Autorise formellement l'existence du projet et donne l'autorité au chef de projet." },
-            { title: "Plan de Management (PMP)", desc: "Document décrivant comment le projet sera exécuté, surveillé et clos." },
-            { title: "Maîtrise des Changements", desc: "Revoir, approuver et gérer toutes les modifications pour éviter la dérive." },
-            { title: "Clôture Administrative", desc: "Collecte des enregistrements, leçons apprises, archivage." },
-            { title: "Clôture de Contrat", desc: "Vérification du produit et règlement final des accords." },
-            { title: "Intégration", desc: "Coordonner les processus et activités pour le bénéfice global du projet." }
+            { title: "Charte", desc: "Autorise le projet." },
+            { title: "PMP", desc: "Plan de Management de Projet." },
+            { title: "Clôture", desc: "Administrative et Contractuelle." }
         ],
         baseQuestions: [
-            { q: "Quel document donne l'autorité au chef de projet ?", options: ["Le WBS", "La Charte du projet", "Le PV", "L'échéancier"], ans: 1 },
-            { q: "Quel est le but principal du Plan de Management ?", options: ["Définir le budget", "Décrire l'exécution et la maîtrise", "Recruter l'équipe", "Acheter des matériaux"], ans: 1 },
-            { q: "La clôture administrative inclut :", options: ["Paiement des fournisseurs", "Archivage des informations", "Destruction des documents", "Négociation de contrats"], ans: 1 },
-            { q: "Que faire en cas de changement non approuvé ?", options: ["L'ignorer", "Le mettre en œuvre", "Le rejeter et documenter", "L'inclure dans le prochain plan"], ans: 2 },
-            { q: "L'intégration du projet concerne :", options: ["Uniquement les coûts", "Uniquement la qualité", "La coordination de tous les processus", "Uniquement la communication"], ans: 2 },
-            { q: "Qui émet la charte du projet ?", options: ["L'équipe projet", "Le sponsor ou initiateur", "Le chef de projet", "Le client final"], ans: 1 },
-            { q: "Le coût d'une modification est-il plus élevé en fin de projet ?", options: ["Non", "Oui, généralement", "C'est égal", "C'est moins cher"], ans: 1 },
-            { q: "Qu'est-ce que la gestion des connaissances ?", options: ["Stocker des fichiers", "Utiliser connaissances existantes et acquérir nouvelles", "Former le sponsor", "Ignorer l'expérience passée"], ans: 1 }
+            { q: "Document donnant l'autorité ?", options: ["Le WBS", "La Charte", "Le PV", "L'échéancier"], ans: 1 },
+            { q: "But du Plan de Management ?", options: ["Définir le budget", "Décrire exécution", "Recruter l'équipe", "Acheter matériaux"], ans: 1 },
+            { q: "Qui émet la charte ?", options: ["L'équipe", "Le sponsor", "Le chef de projet", "Le client"], ans: 1 },
+            { q: "Coût d'une modification tardive ?", options: ["Moins cher", "Plus cher", "Égal", "Gratuit"], ans: 1 }
         ]
     },
     3: {
-        title: "Management du Périmètre (Scope)",
-        summary: "Le périmètre s'assure que le projet inclut tout le travail requis, et seulement celui-ci. Il implique la collecte des exigences, la définition détaillée (contenu produit et projet), la création de la WBS (Work Breakdown Structure) et la validation du contenu par le client.",
+        title: "Management du Périmètre",
+        summary: "S'assurer que tout le travail requis est inclus (WBS).",
         concepts: [
-            { title: "WBS (Structure de Découpage)", desc: "Décomposition hiérarchique du travail total en composants gérables (lots de travail)." },
-            { title: "Collecte des Exigences", desc: "Définir les besoins des parties prenantes via entretiens, ateliers, questionnaires." },
-            { title: "Lot de Travail", desc: "Niveau le plus bas de la WBS, estimable et maîtrisable." },
-            { title: "Validation du Contenu", desc: "Obtenir l'acceptation formelle des livrables finis." },
-            { title: "Maîtrise du Contenu", desc: "Surveiller l'état du périmètre et gérer les modifications." },
-            { title: "Contenu vs Produit", desc: "Contenu = travail à faire. Produit = caractéristiques fonctionnelles." }
+            { title: "WBS", desc: "Structure de découpage." },
+            { title: "Lot de Travail", desc: "Niveau le plus bas." },
+            { title: "Dérive", desc: "Ajout non maîtrisé de travail." }
         ],
         baseQuestions: [
-            { q: "La WBS est une décomposition orientée vers :", options: ["Les coûts", "Les livrables", "Les personnes", "Le temps"], ans: 1 },
-            { q: "Qu'est-ce qu'un 'Lot de Travail' ?", options: ["Un package logiciel", "Le niveau le plus bas de la WBS", "L'équipe complète", "Le budget total"], ans: 1 },
-            { q: "Qui valide le contenu du projet ?", options: ["Le chef de projet seul", "Le client ou sponsor", "L'équipe technique", "Le fournisseur"], ans: 1 },
-            { q: "La 'Dérive du contenu' (Scope Creep) est :", options: ["Une méthode agile", "L'ajout non maîtrisé de travail", "La réduction du budget", "La fin du projet"], ans: 1 },
-            { q: "Quel outil permet de recueillir des exigences ?", options: ["Le diagramme de Gantt", "L'entretien", "Le budget", "Le WBS"], ans: 1 },
-            { q: "La différence entre contenu produit et projet est :", options: ["Aucune", "Fonctions vs travail pour créer le produit", "Coût vs qualité", "Début vs fin"], ans: 1 },
-            { q: "Continuer la décomposition jusqu'au 'lot de travail' permet de :", options: ["Augmenter le coût", "Rendre le travail plus difficile", "Rendre le travail gérable et estimable", "Créer plus de réunions"], ans: 2 },
-            { q: "Le contrôle qualité se fait généralement :", options: ["Après la validation", "Avant la validation", "Pendant la clôture", "Avant le démarrage"], ans: 1 }
+            { q: "La WBS est orientée vers :", options: ["Coûts", "Livrables", "Personnes", "Temps"], ans: 1 },
+            { q: "Niveau le plus bas de la WBS ?", options: ["L'équipe", "Lot de travail", "Budget", "Projet"], ans: 1 },
+            { q: "Qui valide le contenu ?", options: ["Chef projet seul", "Client/Sponsor", "Équipe", "Fournisseur"], ans: 1 }
         ]
     },
     4: {
         title: "Délais et Coûts",
-        summary: "Le management des délais concerne la définition des activités, leur séquencage, l'estimation des durées et la création de l'échéancier. Le management des coûts implique l'estimation des ressources et du budget, ainsi que le suivi (Earned Value). Le chemin critique détermine la durée la plus courte.",
+        summary: "Chemin critique, marge et estimation budgétaire.",
         concepts: [
-            { title: "Chemin Critique", desc: "La séquence d'activités déterminant la durée la plus courte du projet (marge nulle)." },
-            { title: "Marge (Float)", desc: "Temps dont une activité peut être retardée sans retarder la fin du projet." },
-            { title: "Référence de base des coûts", desc: "Budget approuvé échelonné dans le temps (S-Curve)." },
-            { title: "Diagramme de Gantt", desc: "Graphique à barres montrant dates, durées et relations d'antériorité." },
-            { title: "Estimation Budgétaire", desc: "Consolidation des coûts estimés pour établir le budget autorisé." }
+            { title: "Chemin Critique", desc: "Durée la plus courte." },
+            { title: "Marge", desc: "Délai retardable sans impacter la fin." },
+            { title: "Gantt", desc: "Diagramme à barres." }
         ],
         baseQuestions: [
-            { q: "Le chemin critique représente :", options: ["Le chemin le plus cher", "Le chemin le plus long (durée minimale)", "Le chemin le plus court", "Les activités risquées"], ans: 1 },
-            { q: "Qu'est-ce que la marge (float) ?", options: ["L'argent économisé", "Le délai retardable sans impacter la fin", "Le pourcentage d'erreur", "Le bonus"], ans: 1 },
-            { q: "Quel diagramme montre des barres horizontales pour le temps ?", options: ["Réseau", "Gantt", "Flux de trésorerie", "Camembert"], ans: 1 },
-            { q: "La courbe en S (S-Curve) représente :", options: ["La vitesse de l'équipe", "Le cumul des coûts/valeur dans le temps", "Les risques", "La qualité"], ans: 1 },
-            { q: "Si une activité a une marge de 0, elle est :", options: ["Sur le chemin critique", "Terminée", "Non commencée", "Optionnelle"], ans: 0 },
-            { q: "L'estimation par analogie utilise :", options: ["Des données historiques", "Des calculs complexes", "L'intuition seule", "Le hasard"], ans: 0 },
-            { q: "Qu'est-ce que l'Estimation To Complete (ETC) ?", options: ["Le budget total", "Ce qu'il reste à dépenser", "Ce qui a été dépensé", "L'écart"], ans: 1 },
-            { q: "L'effort est-il la même chose que la durée ?", options: ["Oui", "Non (Effort = travail, Durée = temps calendrier)", "C'est pareil", "Dépend du client"], ans: 1 }
+            { q: "Chemin critique = ?", options: ["Plus cher", "Le plus long", "Le plus court", "Activités risquées"], ans: 1 },
+            { q: "Marge (float) ?", options: ["Argent économisé", "Délai retardable", "Erreur", "Bonus"], ans: 1 },
+            { q: "Diagramme Gantt ?", options: ["Réseau", "Barres horizontales", "Camembert", "Flux"], ans: 1 }
         ]
     },
     5: {
         title: "Communication",
-        summary: "Le management de la communication assure la diffusion pertinente des informations. Il implique la planification (Qui a besoin de quoi, quand, comment), la gestion (mise à disposition) et la maîtrise. Le nombre de canaux de communication croît exponentiellement avec le nombre de parties prenantes.",
+        summary: "Diffusion de l'information (Push, Pull, Interactive).",
         concepts: [
-            { title: "Canaux de Communication", desc: "Formule n(n-1)/2. Nombre de liens potentiels entre parties prenantes." },
-            { title: "Communication Interactive", desc: "Échange multidirectionnel entre plusieurs personnes (réunions)." },
-            { title: "Push Communication", desc: "Envoi à des destinataires spécifiques (lettres, emails)." },
-            { title: "Pull Communication", desc: "Mise à disposition pour consultation (intranet, e-learning)." },
-            { title: "Bruit", desc: "Tout ce qui gêne la transmission du message (distance, langage, hostilité)." }
+            { title: "Canaux", desc: "Formule n(n-1)/2." },
+            { title: "Push", desc: "Lettre, Email." },
+            { title: "Pull", desc: "Intranet, E-learning." }
         ],
         baseQuestions: [
-            { q: "Combien de canaux pour 4 parties prenantes ?", options: ["4", "6", "8", "12"], ans: 1 },
-            { q: "Quel est le mode 'Push' ?", options: ["Site Intranet", "Lettre recommandée", "Réunion", "Discussion informelle"], ans: 1 },
-            { q: "Qu'est-ce que le 'Bruit' en communication ?", options: ["Un son fort", "Une barrière à la transmission", "Un logiciel", "Une réponse"], ans: 1 },
-            { q: "Une réunion est un exemple de communication :", options: ["Pull", "Push", "Interactive", "Non verbale"], ans: 2 },
-            { q: "L'e-mail est généralement une communication :", options: ["Interactive", "Push (parfois réponses interactives)", "Pull", "Visuelle uniquement"], ans: 1 },
-            { q: "Le chef de projet passe environ combien de temps à communiquer ?", options: ["10%", "50%", "90%", "100%"], ans: 2 },
-            { q: "Qu'est-ce qui peut bloquer la communication ?", options: ["La clarté", "L'hostilité", "Le bon vocabulaire", "La courte distance"], ans: 1 },
-            { q: "Le modèle de communication inclut :", options: ["Emetteur, Message, Récepteur", "Budget, Coût, Qualité", "WBS, PBS, OBS", "Plan, Faire, Vérifier"], ans: 0 }
+            { q: "Canaux pour 4 parties prenantes ?", options: ["4", "6", "8", "12"], ans: 1 },
+            { q: "Email est ?", options: ["Interactive", "Push", "Pull", "Visuelle"], ans: 1 },
+            { q: "Réunion est ?", options: ["Pull", "Push", "Interactive", "Non verbale"], ans: 2 }
         ]
     }
 };
 
-/**
- * LOGIC: QUESTION EXPANDER TO REACH 35
- * Génère des questions Vrai/Faux basées sur les concepts pour combler le manque.
- */
+// Expand questions to 35
 function expandQuestions(chapterId) {
     const ch = rawCourseData[chapterId];
     let finalQuestions = [...ch.baseQuestions];
-    
-    // Helper pour créer une Q True/False
-    const createTF = (statement, isTrue) => {
-        return {
-            q: statement,
-            options: ["Vrai", "Faux"],
-            ans: isTrue ? 0 : 1
-        };
-    };
-
-    // Générer des Q à partir des concepts
+    const createTF = (statement, isTrue) => ({ q: statement, options: ["Vrai", "Faux"], ans: isTrue ? 0 : 1 });
     ch.concepts.forEach(c => {
         if (finalQuestions.length >= 35) return;
-        // Extraire la première phrase du concept
-        const statement = c.desc;
-        // Créer une vraie question
-        finalQuestions.push(createTF(`${c.title} : ${statement}`, true));
-        
+        finalQuestions.push(createTF(`${c.title} : ${c.desc}`, true));
         if (finalQuestions.length >= 35) return;
-        // Créer une fausse question (inverser un mot clé)
-        finalQuestions.push(createTF(`${c.title} : ${statement}`, false));
+        finalQuestions.push(createTF(`${c.title} : ${c.desc}`, false));
     });
-
-    // Si toujours pas assez (pour le prototype), dupliquer des existantes avec variations
     while (finalQuestions.length < 35) {
         const original = finalQuestions[finalQuestions.length % finalQuestions.length];
-        const copy = { ...original, q: original.q + " (Vérification)" }; 
-        finalQuestions.push(copy);
+        finalQuestions.push({ ...original, q: original.q + " (Vérification)" }); 
     }
-
     return finalQuestions.slice(0, 35);
 }
+Object.keys(rawCourseData).forEach(k => rawCourseData[k].questions = expandQuestions(parseInt(k)));
 
-// Expand all course data on load
-Object.keys(rawCourseData).forEach(k => {
-    rawCourseData[k].questions = expandQuestions(parseInt(k));
-});
-
-
-/**
- * STATE & ROUTER
- */
-const appState = {
-    scores: { 1:0, 2:0, 3:0, 4:0, 5:0 },
-    mastery: { 1:0, 2:0, 3:0, 4:0, 5:0 },
-    currentView: 'dashboard'
-};
+const appState = { scores: { 1:0, 2:0, 3:0, 4:0, 5:0 }, mastery: { 1:0, 2:0, 3:0, 4:0, 5:0 }, currentView: 'dashboard' };
 
 const router = {
     navigate: (viewId, chapterId = null) => {
         document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
         if (viewId === 'dashboard') document.getElementById('nav-dashboard').classList.add('active');
+        if (viewId === 'review') document.getElementById('nav-review').classList.add('active');
         if (viewId === 'chapter' && chapterId) document.getElementById(`nav-ch${chapterId}`).classList.add('active');
 
         document.querySelectorAll('.view').forEach(v => {
@@ -466,61 +585,45 @@ const router = {
             setTimeout(() => { if(!v.classList.contains('active')) v.classList.add('hidden'); }, 400);
         });
 
-        const target = document.getElementById(viewId === 'chapter' ? 'view-chapter' : (viewId === 'quiz' ? 'view-quiz' : (viewId === 'results' ? 'view-results' : 'view-dashboard')));
+        const target = document.getElementById(viewId === 'chapter' ? 'view-chapter' : (viewId === 'quiz' ? 'view-quiz' : (viewId === 'results' ? 'view-results' : (viewId === 'review' ? 'view-review' : 'view-dashboard'))));
         if (target) {
             target.classList.remove('hidden');
             setTimeout(() => target.classList.add('active'), 50);
         }
-
         if (viewId === 'dashboard') dashboardController.render();
         if (viewId === 'chapter' && chapterId) chapterController.load(chapterId);
     },
-
     startExam: () => {
-        if(confirm("Lancer l'examen final de 100 questions ?")) {
+        if(confirm("Lancer l'examen final ?")) {
             document.getElementById('exam-overlay').classList.remove('hidden');
             examEngine.init();
         }
     }
 };
 
-/**
- * DASHBOARD
- */
 const dashboardController = {
     render: () => {
         let totalMastery = 0;
         for (let i = 1; i <= 5; i++) {
             const score = appState.scores[i];
-            // Calcule % sur base de 35 questions
             const percent = score > 0 ? Math.round((score / 35) * 100) : 0;
-            appState.mastery[i] = percent;
-            totalMastery += percent;
-            
+            appState.mastery[i] = percent; totalMastery += percent;
             const circle = document.getElementById(`prog-ch${i}`);
             if (circle) circle.textContent = `${percent}%`;
         }
-        
         const global = Math.round(totalMastery / 5);
         const masteryEl = document.getElementById('global-mastery');
         masteryEl.textContent = `${global}%`;
-        
-        if (global < 50) masteryEl.style.color = 'var(--error-neon)';
-        else if (global < 80) masteryEl.style.color = 'var(--primary-neon)';
-        else masteryEl.style.color = 'var(--success-neon)';
+        masteryEl.style.color = (global < 50) ? 'var(--error-neon)' : (global < 80 ? 'var(--primary-neon)' : 'var(--success-neon)');
     }
 };
 
-/**
- * CHAPTER CONTROLLER
- */
 const chapterController = {
     load: (id) => {
         chapterController.currentChapter = id;
         const data = rawCourseData[id];
         document.getElementById('ch-title').textContent = `Chapitre 0${id}: ${data.title}`;
         document.getElementById('ch-summary').innerHTML = `<p>${data.summary}</p>`;
-        
         const conceptContainer = document.getElementById('ch-concepts');
         conceptContainer.innerHTML = '';
         data.concepts.forEach(c => {
@@ -532,79 +635,44 @@ const chapterController = {
     }
 };
 
-/**
- * QUIZ ENGINE (Chapter)
- */
 const quizEngine = {
-    questions: [],
-    currentIdx: 0,
-    score: 0,
-    
+    questions: [], currentIdx: 0, score: 0,
     startQuiz: () => {
-        const bank = rawCourseData[chapterController.currentChapter].questions; // Already expanded to 35
-        quizEngine.questions = bank; 
-        
-        quizEngine.currentIdx = 0;
-        quizEngine.score = 0;
+        const bank = rawCourseData[chapterController.currentChapter].questions; 
+        quizEngine.questions = bank; quizEngine.currentIdx = 0; quizEngine.score = 0;
         router.navigate('quiz');
         quizEngine.renderQuestion();
     },
-
     renderQuestion: () => {
         const q = quizEngine.questions[quizEngine.currentIdx];
         document.getElementById('quiz-progress-q').textContent = `Question ${quizEngine.currentIdx + 1}/35`;
         document.getElementById('quiz-current-score').textContent = quizEngine.score;
         document.getElementById('quiz-question').textContent = q.q;
-        
         const optsContainer = document.getElementById('quiz-options');
-        optsContainer.innerHTML = '';
-        document.getElementById('quiz-feedback').classList.add('hidden');
-
+        optsContainer.innerHTML = ''; document.getElementById('quiz-feedback').classList.add('hidden');
         q.options.forEach((opt, idx) => {
             const btn = document.createElement('button');
-            btn.className = 'option-btn';
-            btn.textContent = opt;
+            btn.className = 'option-btn'; btn.textContent = opt;
             btn.onclick = () => quizEngine.handleAnswer(idx, btn);
             optsContainer.appendChild(btn);
         });
-
         document.getElementById('quiz-timer').style.width = '0%';
         setTimeout(() => document.getElementById('quiz-timer').style.width = '100%', 100);
     },
-
     handleAnswer: (selectedIdx, btnElement) => {
         const allBtns = document.querySelectorAll('#quiz-options .option-btn');
         allBtns.forEach(b => b.onclick = null);
-
         const q = quizEngine.questions[quizEngine.currentIdx];
         const isCorrect = selectedIdx === q.ans;
-
-        if (isCorrect) {
-            btnElement.classList.add('correct');
-            quizEngine.score++;
-            document.getElementById('feedback-title').textContent = "CORRECT";
-            document.getElementById('feedback-title').style.color = "var(--success-neon)";
-        } else {
-            btnElement.classList.add('wrong');
-            allBtns[q.ans].classList.add('correct');
-            document.getElementById('feedback-title').textContent = "INCORRECT";
-            document.getElementById('feedback-title').style.color = "var(--error-neon)";
-        }
-        
+        if (isCorrect) { btnElement.classList.add('correct'); quizEngine.score++; }
+        else { btnElement.classList.add('wrong'); allBtns[q.ans].classList.add('correct'); }
         document.getElementById('quiz-current-score').textContent = quizEngine.score;
-        const fb = document.getElementById('quiz-feedback');
-        fb.classList.remove('hidden');
+        document.getElementById('quiz-feedback').classList.remove('hidden');
     },
-
     nextQuestion: () => {
         quizEngine.currentIdx++;
-        if (quizEngine.currentIdx < quizEngine.questions.length) {
-            quizEngine.renderQuestion();
-        } else {
-            quizEngine.finish();
-        }
+        if (quizEngine.currentIdx < quizEngine.questions.length) { quizEngine.renderQuestion(); } else { quizEngine.finish(); }
     },
-
     finish: () => {
         appState.scores[chapterController.currentChapter] = quizEngine.score;
         document.getElementById('view-quiz').classList.remove('active');
@@ -617,62 +685,34 @@ const quizEngine = {
     }
 };
 
-/**
- * EXAM ENGINE (Final)
- */
 const examEngine = {
-    questions: [],
-    currentIdx: 0,
-    answers: [],
-    timerInterval: null,
-    timeLeft: 5400, // 90 mins
-
+    questions: [], currentIdx: 0, answers: [], timerInterval: null, timeLeft: 5400,
     init: () => {
         let allQ = [];
-        for(let i=1; i<=5; i++) {
-            // Prendre les 35 questions générées de chaque chapitre
-            allQ = allQ.concat(rawCourseData[i].questions);
-        }
-        // On a exactement 5 * 35 = 175 questions générées (plus que les 100 demandées).
-        // On en prend 100 aléatoires.
+        for(let i=1; i<=5; i++) allQ = allQ.concat(rawCourseData[i].questions);
         examEngine.questions = allQ.sort(() => 0.5 - Math.random()).slice(0, 100);
-        
-        examEngine.currentIdx = 0;
-        examEngine.answers = new Array(100).fill(null);
-        examEngine.timeLeft = 5400;
-        
-        examEngine.renderQuestion();
-        examEngine.startTimer();
+        examEngine.currentIdx = 0; examEngine.answers = new Array(100).fill(null); examEngine.timeLeft = 5400;
+        examEngine.renderQuestion(); examEngine.startTimer();
     },
-
     renderQuestion: () => {
         const q = examEngine.questions[examEngine.currentIdx];
         document.getElementById('exam-q-num').textContent = examEngine.currentIdx + 1;
         document.getElementById('exam-question').textContent = q.q;
-        
         const optsContainer = document.getElementById('exam-options');
         optsContainer.innerHTML = '';
-
         q.options.forEach((opt, idx) => {
             const btn = document.createElement('button');
-            btn.className = 'option-btn';
-            btn.textContent = opt;
-            if (examEngine.answers[examEngine.currentIdx] === idx) {
-                btn.classList.add('selected');
-            }
+            btn.className = 'option-btn'; btn.textContent = opt;
+            if (examEngine.answers[examEngine.currentIdx] === idx) btn.classList.add('selected');
             btn.onclick = () => {
                 document.querySelectorAll('#exam-options .option-btn').forEach(b => b.classList.remove('selected'));
-                btn.classList.add('selected');
-                examEngine.answers[examEngine.currentIdx] = idx;
+                btn.classList.add('selected'); examEngine.answers[examEngine.currentIdx] = idx;
             };
             optsContainer.appendChild(btn);
         });
-
-        // Update Next Button Text
         const btn = document.getElementById('exam-next-btn');
-        btn.textContent = (examEngine.currentIdx === 99) ? "Terminer l'examen" : "Suivant";
+        btn.textContent = (examEngine.currentIdx === 99) ? "Terminer" : "Suivant";
     },
-
     startTimer: () => {
         if(examEngine.timerInterval) clearInterval(examEngine.timerInterval);
         examEngine.timerInterval = setInterval(() => {
@@ -683,30 +723,16 @@ const examEngine = {
             if(examEngine.timeLeft <= 0) examEngine.submit();
         }, 1000);
     },
-
     nextQuestion: () => {
-        // Si c'est la dernière question (index 99)
-        if (examEngine.currentIdx === 99) {
-            examEngine.submit();
-            return;
-        }
-        examEngine.currentIdx++;
-        examEngine.renderQuestion();
+        if (examEngine.currentIdx === 99) { examEngine.submit(); return; }
+        examEngine.currentIdx++; examEngine.renderQuestion();
     },
-
-    toggleNotes: () => {
-        document.getElementById('exam-notes-panel').classList.toggle('active');
-    },
-
+    toggleNotes: () => { document.getElementById('exam-notes-panel').classList.toggle('active'); },
     submit: () => {
         clearInterval(examEngine.timerInterval);
-        if(!confirm("Soumettre l'examen ?")) return;
-
+        if(!confirm("Soumettre ?")) return;
         let correct = 0;
-        examEngine.questions.forEach((q, i) => {
-            if (examEngine.answers[i] === q.ans) correct++;
-        });
-
+        examEngine.questions.forEach((q, i) => { if (examEngine.answers[i] === q.ans) correct++; });
         document.getElementById('exam-overlay').classList.add('hidden');
         document.getElementById('view-results').classList.remove('hidden');
         setTimeout(() => document.getElementById('view-results').classList.add('active'), 50);
@@ -717,29 +743,25 @@ const examEngine = {
 const resultsController = {
     show: (correct, total, type) => {
         const percentage = Math.round((correct / total) * 100);
-        const wrong = total - correct;
-
         document.getElementById('res-percentage').textContent = `${percentage}%`;
         document.getElementById('res-correct').textContent = correct;
-        document.getElementById('res-wrong').textContent = wrong;
+        document.getElementById('res-wrong').textContent = total - correct;
         document.getElementById('res-total').textContent = total;
-
-        let msg = "";
-        let color = "";
-        if(percentage >= 80) { msg = "Excellente maîtrise. Prêt pour l'examen."; color = "var(--success-neon)"; }
-        else if(percentage >= 50) { msg = "Maîtrise moyenne. Révisez les chapitres faibles."; color = "var(--primary-neon)"; }
-        else { msg = "Maîtrise faible. Revoir les synthèses recommandé."; color = "var(--error-neon)"; }
-
+        let msg = percentage >= 80 ? "Excellente maîtrise." : (percentage >= 50 ? "Maîtrise moyenne." : "Maîtrise faible.");
+        let color = percentage >= 80 ? "var(--success-neon)" : (percentage >= 50 ? "var(--primary-neon)" : "var(--error-neon)");
         const msgEl = document.getElementById('res-message');
-        msgEl.textContent = msg;
-        msgEl.style.color = color;
-        document.getElementById('res-percentage').style.color = color;
+        msgEl.textContent = msg; msgEl.style.color = color; document.getElementById('res-percentage').style.color = color;
     }
 };
 
-document.addEventListener('DOMContentLoaded', () => {
-    dashboardController.render();
-});
+function toggleMobileMenu() {
+    const sidebar = document.getElementById('main-sidebar');
+    const overlay = document.getElementById('sidebar-overlay');
+    sidebar.classList.toggle('active');
+    overlay.classList.toggle('active');
+}
+
+document.addEventListener('DOMContentLoaded', () => { dashboardController.render(); });
 </script>
 </body>
 </html>
