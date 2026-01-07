@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>PMI: Cognitive Learning System Corrected</title>
+    <title>PMI: Cognitive Learning System (Hardcore)</title>
     <style>
         /* --- CORE VARIABLES & THEME --- */
         :root {
@@ -14,6 +14,7 @@
             --secondary-neon: #bc13fe;
             --success-neon: #0aff60;
             --error-neon: #ff3e3e;
+            --warning-neon: #ffd700;
             --text-main: #e0e0e0;
             --text-muted: #8b9bb4;
             --border-color: #2a2d3d;
@@ -22,7 +23,9 @@
             --ease-out: cubic-bezier(0.215, 0.61, 0.355, 1);
         }
 
-        * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; -webkit-tap-highlight-color: transparent; }
+        /* --- RESET & BASE --- */
+        * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+        
         body {
             background-color: var(--bg-deep);
             color: var(--text-main);
@@ -31,12 +34,18 @@
             overflow: hidden;
             display: flex;
             flex-direction: column;
+            user-select: auto; 
+            -webkit-user-select: auto;
+        }
+
+        button, .no-select, .nav-item {
+            user-select: none;
+            -webkit-user-select: none;
         }
 
         /* --- LAYOUT --- */
         .app-container { display: flex; height: 100%; width: 100%; position: relative; }
         
-        /* --- SIDEBAR (Desktop Default) --- */
         aside {
             width: 280px;
             background: var(--bg-panel);
@@ -47,13 +56,14 @@
             overflow-y: auto;
         }
 
-        .brand { font-size: 0.9rem; font-weight: 700; color: var(--primary-neon); margin-bottom: 3rem; display: flex; align-items: center; gap: 10px; }
+        .brand { font-size: 0.9rem; font-weight: 700; color: var(--primary-neon); margin-bottom: 3rem; display: flex; align-items: center; gap: 10px; user-select: none; }
         .brand span { display: inline-block; width: 10px; height: 10px; background: var(--primary-neon); box-shadow: 0 0 10px var(--primary-neon); }
 
         nav button {
             background: transparent; border: none; color: var(--text-muted);
             width: 100%; text-align: left; padding:1rem; margin-bottom: 0.5rem;
             cursor: pointer; transition: all 0.3s; border-left: 2px solid transparent; font-size: 0.9rem;
+            text-align: left;
         }
         nav button:hover { color: var(--text-main); padding-left: 1.2rem; }
         nav button.active { color: var(--primary-neon); border-left: 2px solid var(--primary-neon); background: linear-gradient(90deg, rgba(0, 243, 255, 0.05), transparent); }
@@ -69,7 +79,6 @@
         }
         .dev-credit span { color: var(--secondary-neon); font-weight: bold; }
 
-        /* --- MOBILE OVERLAY (Hides content when menu is open) --- */
         .sidebar-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(0,0,0,0.7); z-index: 15;
@@ -77,7 +86,6 @@
         }
         .sidebar-overlay.active { display: block; opacity:1; }
 
-        /* --- MOBILE HEADER (Visible only on small screens) --- */
         .mobile-header {
             display: none;
             padding:1rem;
@@ -87,18 +95,14 @@
             justify-content: space-between;
             position: absolute; top: 0; left: 0; right: 0; z-index: 10;
         }
-        .hamburger {
-            font-size: 1.5rem; color: var(--primary-neon); cursor: pointer;
-        }
+        .hamburger { font-size: 1.5rem; color: var(--primary-neon); cursor: pointer; }
 
-        /* --- MAIN CONTENT --- */
         main { 
             flex:1; position: relative; overflow-y: auto; 
             background: radial-gradient(circle at top right, #13151f 0%, var(--bg-deep) 40%); 
             padding: 2rem 3rem; 
         }
 
-        /* --- VIEWS --- */
         .view { display: none; opacity: 0; transform: translateY(10px); transition: opacity 0.4s ease, transform 0.4s ease; max-width: 1200px; margin: 0 auto; padding-bottom: 50px; padding-top: 20px; }
         .view.active { display: block; opacity:1; transform: translateY(0); }
 
@@ -107,9 +111,8 @@
         h2 { font-size: 1.2rem; color: var(--text-main); margin-bottom: 1rem; border-bottom: 1px solid var(--border-color); padding-bottom: 0.5rem; }
         p { line-height: 1.6; color: var(--text-muted); margin-bottom: 0.8rem; }
 
-        /* --- DASHBOARD --- */
         .dashboard-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem; margin-top: 2rem; }
-        .card { background: var(--bg-card); border: 1px solid var(--border-color); padding: 1.5rem; border-radius: 4px; transition: transform 0.2s; position: relative; overflow: hidden; }
+        .card { background: var(--bg-card); border: 1px solid var(--border-color); padding: 1.5rem; border-radius: 4px; transition: transform 0.2s; position: relative; overflow: hidden; cursor: pointer; }
         .card::before { content: ''; position: absolute; top: 0; left: 0; width: 2px; height: 100%; background: var(--border-color); transition: background 0.3s; }
         .card:hover { border-color: var(--text-muted); transform: translateY(-2px); }
         .card:hover::before { background: var(--primary-neon); }
@@ -117,45 +120,46 @@
         .card-number { font-family: var(--font-mono); color: var(--primary-neon); font-size: 0.8rem; }
         .progress-circle { width: 40px; height: 40px; border-radius: 50%; border: 2px solid var(--border-color); display: flex; align-items: center; justify-content: center; font-size: 0.7rem; font-family: var(--font-mono); }
 
-        /* --- BUTTONS --- */
         .btn-cta { margin-top: 1rem; width: 100%; padding: 0.8rem; background: transparent; border: 1px solid var(--primary-neon); color: var(--primary-neon); text-transform: uppercase; letter-spacing: 1px; font-size: 0.75rem; cursor: pointer; transition: all 0.2s; }
         .btn-cta:hover { background: var(--primary-neon); color: #000; box-shadow: 0 0 15px rgba(0, 243, 255, 0.3); }
         .btn-nav { width: 200px; padding: 1rem; background: var(--bg-panel); border: 1px solid var(--primary-neon); color: var(--primary-neon); text-transform: uppercase; font-size: 0.9rem; cursor: pointer; margin-top: 2rem; }
         .btn-nav:hover { background: var(--primary-neon); color: #000; }
 
-        /* --- CHAPTER --- */
         .summary-box { background: rgba(255,255,255,0.02); padding: 1.5rem; border-left: 3px solid var(--secondary-neon); margin-bottom: 2rem; }
         .concept-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1rem; margin-bottom: 3rem; }
         .concept-card { background: var(--bg-card); padding: 1rem; border: 1px solid var(--border-color); cursor: pointer; }
         .concept-title { color: var(--secondary-neon); font-size: 0.9rem; font-weight: bold; margin-bottom: 0.5rem; }
         .concept-desc { font-size: 0.8rem; }
 
-        /* --- QUIZ & EXAM COMMON --- */
         .quiz-container, .exam-body-inner { max-width: 900px; margin: 0 auto; text-align: center; }
         .timer-bar { width: 100%; height: 4px; background: var(--bg-card); margin-bottom: 2rem; }
         .timer-fill { height: 100%; background: var(--primary-neon); width: 0%; transition: width 1s linear; }
+        
+        .exam-timer { font-family: var(--font-mono); transition: color 0.3s; }
+        .timer-warning { color: var(--warning-neon); animation: pulse 2s infinite; }
+        .timer-critical { color: var(--error-neon); animation: pulse 1s infinite; }
+
+        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
+
         .question-text { font-size: 1.4rem; margin-bottom: 2rem; min-height: 80px; display: flex; align-items: center; justify-content: center; }
         .options-grid { display: grid; gap: 1rem; }
         .option-btn { background: var(--bg-panel); border: 1px solid var(--border-color); padding: 1.2rem; color: var(--text-main); text-align: left; cursor: pointer; transition: all 0.2s; position: relative; }
         .option-btn:hover { border-color: var(--primary-neon); background: rgba(0, 243, 255, 0.05); }
         .option-btn.selected { background: var(--primary-neon); color: #000; border-color: var(--primary-neon); }
-        .option-btn.correct { background: rgba(10, 255, 96, 0.1); border-color: var(--success-neon); }
-        .option-btn.wrong { background: rgba(255, 62, 62, 0.1); border-color: var(--error-neon); }
+        .option-btn.correct { background: rgba(10, 255, 96, 0.1); border-color: var(--success-neon); color: var(--success-neon); }
+        .option-btn.wrong { background: rgba(255, 62, 62, 0.1); border-color: var(--error-neon); color: var(--error-neon); }
 
-        /* --- EXAM SPECIFIC --- */
         .exam-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg-deep); z-index: 100; display: flex; flex-direction: column; }
         .exam-header { padding: 1rem 2rem; background: var(--bg-panel); border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; }
         .exam-body { flex: 1; overflow-y: auto; padding: 2rem; display: flex; flex-direction: column; }
         .exam-footer { padding: 2rem; border-top: 1px solid var(--border-color); background: var(--bg-panel); display: flex; justify-content: center; align-items: center; }
         
-        /* Notes Panel (Default Side) */
         .notes-panel { width: 300px; background: var(--bg-panel); border-left: 1px solid var(--border-color); padding: 1rem; font-family: var(--font-mono); font-size: 0.85rem; display: none; position: absolute; right: 0; top: 60px; bottom: 80px; }
         .notes-panel.active { display: block; }
         textarea { width: 100%; height: 100%; background: var(--bg-deep); border: 1px solid var(--border-color); color: var(--text-main); padding: 0.5rem; resize: none; }
         
         .btn-exit { background: transparent; border: 1px solid var(--error-neon); color: var(--error-neon); padding: 5px 10px; font-size: 0.8rem; cursor: pointer; border-radius: 4px; }
 
-        /* --- RESULTS --- */
         .score-display { font-size: 3rem; color: var(--primary-neon); font-family: var(--font-mono); margin: 1rem 0; text-shadow: 0 0 20px rgba(0,243,255,0.3); }
         .score-breakdown { display: flex; gap: 2rem; justify-content: center; margin-bottom: 2rem; flex-wrap: wrap; }
         .breakdown-item span { display: block; font-size: 0.8rem; color: var(--text-muted); }
@@ -165,133 +169,93 @@
 
         .hidden { display: none !important; }
 
-        /* --- WBS SCHEMA CSS --- */
-        .review-container { max-width: 100%; }
-        .timeline-item { border-left: 2px solid var(--primary-neon); padding-left: 20px; margin-bottom: 40px; position: relative; }
-        .timeline-item::before { content: ''; position: absolute; left: -6px; top: 0; width: 10px; height: 10px; background: var(--bg-deep); border: 2px solid var(--primary-neon); border-radius: 50%; }
-        .phase-badge { background: rgba(0, 243, 255, 0.1); color: var(--primary-neon); padding: 4px 8px; border-radius: 4px; font-family: var(--font-mono); font-size: 0.7rem; margin-bottom: 5px; display: inline-block; }
-        
-        .wbs-wrapper { overflow-x: auto; padding: 40px 0; background: rgba(255,255,255,0.02); border-radius: 8px; margin-bottom: 3rem; text-align: center; }
-        .tree ul { padding-top: 20px; position: relative; transition: all 0.5s; display: flex; justify-content: center; }
-        .tree li { float: left; text-align: center; list-style-type: none; position: relative; padding: 20px 5px 0 5px; transition: all 0.5s; }
-        .tree li::before, .tree li::after { content: ''; position: absolute; top: 0; right: 50%; border-top: 1px solid var(--border-color); width: 50%; height: 20px; }
-        .tree li::after { right: auto; left: 50%; border-left: 1px solid var(--border-color); }
-        .tree li:only-child::after, .tree li:only-child::before { display: none; }
-        .tree li:only-child { padding-top: 0; }
-        .tree li:first-child::before, .tree li:last-child::after { border: 0 none; }
-        .tree li:last-child::before { border-right: 1px solid var(--border-color); border-radius: 0 5px 0 0; }
-        .tree li:first-child::after { border-radius: 5px 0 0 0; }
-        .tree ul ul::before { content: ''; position: absolute; top: 0; left: 50%; border-left: 1px solid var(--border-color); width: 0; height: 20px; }
-        .tree li span { border: 1px solid var(--border-color); padding: 10px 15px; text-decoration: none; color: var(--text-main); font-family: var(--font-mono); font-size: 0.8rem; display: inline-block; background: var(--bg-panel); border-radius: 5px; transition: all 0.3s; min-width: 120px; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
-        .tree li span:hover { background: var(--primary-neon); color: #000; border-color: var(--primary-neon); transform: scale(1.05); box-shadow: 0 0 10px var(--primary-neon); }
-        .tree > ul > li > span { background: var(--secondary-neon); color: white; border: none; font-weight: bold; }
-        .tree > ul > li > ul > li > span { border-color: var(--primary-neon); color: var(--primary-neon); }
-        .tree > ul > li > ul > li > ul > li > span { border-color: var(--text-muted); }
+        /* --- OPENING SCREEN STYLES --- */
+        #opening-screen {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: var(--bg-deep);
+            z-index: 9999;
+            display: flex; flex-direction: column;
+            justify-content: center; align-items: center;
+            transition: opacity 0.8s ease-out;
+        }
+        .loader {
+            width: 50px; height: 50px;
+            border: 5px solid var(--bg-panel);
+            border-top: 5px solid var(--primary-neon);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 20px;
+        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        .opening-brand { font-size: 1.5rem; color: var(--text-main); letter-spacing: 2px; margin-bottom: 0.5rem; }
+        .opening-credit { font-family: var(--font-mono); color: var(--secondary-neon); font-size: 0.9rem; }
 
-
-        /* --- RESPONSIVE MEDIA QUERIES (MOBILE) --- */
         @media (max-width: 768px) {
-            
-            /* Mobile Layout Changes */
             .app-container { flex-direction: column; }
-            
-            /* Sidebar becomes Off-Canvas Drawer */
             aside {
-                position: fixed;
-                left: -100%; /* Hidden by default */
-                width: 85%; /* Full width minus small margin */
-                max-width: 300px;
-                height: 100vh;
-                top: 0;
-                background: var(--bg-deep); /* Solid bg for drawer */
-                box-shadow: 5px 0 15px rgba(0,0,0,0.5);
-                z-index: 30; /* Above overlay */
+                position: fixed; left: -100%; width: 85%; max-width: 300px; height: 100vh; top: 0;
+                background: var(--bg-deep); box-shadow: 5px 0 15px rgba(0,0,0,0.5); z-index: 30;
             }
-            
-            aside.active { left: 0; } /* Show sidebar */
-
-            /* Show Mobile Header */
+            aside.active { left: 0; }
             .mobile-header { display: flex; height: 60px; }
-            
-            /* Adjust Main Content */
-            main { padding: 1rem; padding-top: 70px; /* Space for mobile header */ }
-
-            /* Adjust Grids */
+            main { padding: 1rem; padding-top: 70px; }
             .dashboard-grid { grid-template-columns: 1fr; }
             .concept-grid { grid-template-columns: 1fr; }
-            
-            /* Typography Adjustments */
             h1 { font-size: 1.2rem; }
             h2 { font-size: 1.1rem; }
             .question-text { font-size: 1rem; min-height: auto; padding: 1rem 0; }
-            
-            /* Buttons */
             .btn-nav, .btn-cta { width: 100%; padding: 1rem; font-size: 0.9rem; }
             
-            /* --- MOBILE EXAM SPECIFIC --- */
-            .exam-header { 
-                flex-direction: column; 
-                align-items: flex-start; 
-                padding: 1rem; 
-                height: auto; 
-                background: var(--bg-panel);
-            }
+            .exam-header { flex-direction: column; align-items: flex-start; padding: 1rem; }
             .exam-header .brand { width: 100%; margin-bottom: 10px; }
             .exam-header div { width: 100%; display: flex; justify-content: space-between; align-items: center; margin-top: 5px; }
-            .exam-timer { font-size: 1.5rem !important; color: var(--primary-neon); font-family: var(--font-mono); }
+            .exam-timer { font-size: 1.5rem !important; }
+            .exam-body { padding: 1rem; padding-bottom: 100px; }
             
-            .exam-body { padding: 1rem; padding-bottom: 100px; /* Space for footer */ }
-            
-            /* Notes Panel becomes bottom drawer on mobile */
             .notes-panel {
-                position: fixed;
-                top: auto; bottom: 0; left: 0; right: 0;
-                width: 100%; height: 40%;
+                position: fixed; top: auto; bottom: 0; left: 0; right: 0;
+                width: 100%; height: 50%;
                 border-top: 2px solid var(--secondary-neon);
                 border-left: none;
                 transform: translateY(100%);
-                transition: transform 0.3s ease;
-                z-index: 200;
+                transition: transform 0.3s ease; z-index: 200;
             }
-            .notes-panel.active {
-                transform: translateY(0);
-                display: block;
-            }
-            /* Close button for mobile notes */
+            .notes-panel.active { transform: translateY(0); display: block; }
             .close-notes { display: block; text-align: right; color: var(--error-neon); margin-bottom: 10px; cursor: pointer; }
 
-            .exam-footer { 
-                padding: 1rem; 
-                position: fixed; bottom: 0; left: 0; right: 0; 
-                background: var(--bg-panel); z-index: 110;
-            }
-            
-            /* WBS */
+            .exam-footer { padding: 1rem; position: fixed; bottom: 0; left: 0; right: 0; background: var(--bg-panel); z-index: 110; }
             .wbs-wrapper { overflow-x: scroll; -webkit-overflow-scrolling: touch; }
-            .tree { min-width: 600px; } /* Ensure tree doesn't squash too much */
-
-            .dev-credit { display: none; } /* Move to header or hide to save space */
+            .tree { min-width: 600px; }
+            .dev-credit { display: none; }
+            .exam-overlay.notes-open .exam-question-wrapper { display: none; }
         }
     </style>
 </head>
 <body>
 
+<!-- OPENING SCREEN -->
+<div id="opening-screen">
+    <div class="loader"></div>
+    <div class="opening-brand">ECUEF531</div>
+    <div class="opening-credit">@Dopaem</div>
+</div>
+
 <div class="app-container">
-    <!-- MOBILE OVERLAY (Backdrop) -->
     <div class="sidebar-overlay" id="sidebar-overlay" onclick="toggleMobileMenu()"></div>
 
-    <!-- SIDEBAR -->
     <aside id="main-sidebar">
         <div class="brand"><span></span> ECUEF531</div>
         <nav>
             <button id="nav-dashboard" class="active" onclick="router.navigate('dashboard'); toggleMobileMenu();">Tableau de bord</button>
-            <button id="nav-review" onclick="router.navigate('review'); toggleMobileMenu();">📖 Révision Globale</button>
-            <div style="margin: 1rem 0 0.5rem 0.5rem; font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase;">Chapitres</div>
-            <button id="nav-ch1" onclick="router.navigate('chapter', 1); toggleMobileMenu();">1. Notion de Projet</button>
-            <button id="nav-ch2" onclick="router.navigate('chapter', 2); toggleMobileMenu();">2. Intégration</button>
-            <button id="nav-ch3" onclick="router.navigate('chapter', 3); toggleMobileMenu();">3. Périmètre</button>
-            <button id="nav-ch4" onclick="router.navigate('chapter', 4); toggleMobileMenu();">4. Délais & Coûts</button>
-            <button id="nav-ch5" onclick="router.navigate('chapter', 5); toggleMobileMenu();">5. Communication</button>
+            <div style="margin: 1rem 0 0.5rem 0.5rem; font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase;">Ensembles (Examens)</div>
+            <button id="nav-ch1" onclick="router.navigate('chapter', 1); toggleMobileMenu();">1. Ensemble: Notion</button>
+            <button id="nav-ch2" onclick="router.navigate('chapter', 2); toggleMobileMenu();">2. Ensemble: Intégration</button>
+            <button id="nav-ch3" onclick="router.navigate('chapter', 3); toggleMobileMenu();">3. Ensemble: Périmètre</button>
+            <button id="nav-ch4" onclick="router.navigate('chapter', 4); toggleMobileMenu();">4. Ensemble: Délais & Coûts</button>
+            <button id="nav-ch5" onclick="router.navigate('chapter', 5); toggleMobileMenu();">5. Ensemble: Communication</button>
+            <div style="margin: 1rem 0 0.5rem 0.5rem; font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase;">Quiz de Classe</div>
+            <button id="nav-ch6" onclick="router.navigate('chapter', 6); toggleMobileMenu();">6. Quiz de Classe: Ch 1-3</button>
+            <button id="nav-ch7" onclick="router.navigate('chapter', 7); toggleMobileMenu();">7. Quiz de Classe: Ch 4-5</button>
         </nav>
         <div class="mastery-indicator">
             <div class="mastery-label">Maîtrise Globale</div>
@@ -303,57 +267,43 @@
         <div class="dev-credit">Dev by <span>Dopaem</span></div>
     </aside>
 
-    <!-- MOBILE HEADER -->
     <div class="mobile-header">
         <div class="brand" style="margin: 0; font-size: 0.9rem;"><span style="background: var(--primary-neon)"></span> ECUEF531</div>
         <div class="hamburger" onclick="toggleMobileMenu()">&#9776;</div>
     </div>
 
-    <!-- MAIN -->
     <main id="main-content">
         <!-- DASHBOARD -->
         <section id="view-dashboard" class="view active">
             <header><h1>Module: Management de Projet</h1><p>Système d'Apprentissage Cognitif</p></header>
             <div class="dashboard-grid">
                 <div class="card" onclick="router.navigate('chapter', 1)">
-                    <div class="card-header"><span class="card-number">CH 01</span><div class="progress-circle" id="prog-ch1">0%</div></div>
-                    <h3>La Notion de Projet</h3><p>Triple Contrainte, Agile vs Prédictif.</p><button class="btn-cta">Accéder</button>
+                    <div class="card-header"><span class="card-number">EN 01</span><div class="progress-circle" id="prog-ch1">0%</div></div>
+                    <h3>Ensemble 1: La Notion</h3><p>Triple Contrainte, Agile vs Prédictif.</p><button class="btn-cta">Accéder</button>
                 </div>
                 <div class="card" onclick="router.navigate('chapter', 2)">
-                    <div class="card-header"><span class="card-number">CH 02</span><div class="progress-circle" id="prog-ch2">0%</div></div>
-                    <h3>Management de l'Intégration</h3><p>Charte, Plan de management, Clôture.</p><button class="btn-cta">Accéder</button>
+                    <div class="card-header"><span class="card-number">EN 02</span><div class="progress-circle" id="prog-ch2">0%</div></div>
+                    <h3>Ensemble 2: Intégration</h3><p>Charte, Plan de management, Clôture.</p><button class="btn-cta">Accéder</button>
                 </div>
                 <div class="card" onclick="router.navigate('chapter', 3)">
-                    <div class="card-header"><span class="card-number">CH 03</span><div class="progress-circle" id="prog-ch3">0%</div></div>
-                    <h3>Management du Périmètre</h3><p>WBS, Collecte des exigences, Validation.</p><button class="btn-cta">Accéder</button>
+                    <div class="card-header"><span class="card-number">EN 03</span><div class="progress-circle" id="prog-ch3">0%</div></div>
+                    <h3>Ensemble 3: Périmètre</h3><p>WBS, Collecte des exigences, Validation.</p><button class="btn-cta">Accéder</button>
                 </div>
                 <div class="card" onclick="router.navigate('chapter', 4)">
-                    <div class="card-header"><span class="card-number">CH 04</span><div class="progress-circle" id="prog-ch4">0%</div></div>
-                    <h3>Délais et Coûts</h3><p>Chemin critique, Estimation, Courbe en S.</p><button class="btn-cta">Accéder</button>
+                    <div class="card-header"><span class="card-number">EN 04</span><div class="progress-circle" id="prog-ch4">0%</div></div>
+                    <h3>Ensemble 4: Délais & Coûts</h3><p>Chemin critique, Estimation, Courbe en S.</p><button class="btn-cta">Accéder</button>
                 </div>
                 <div class="card" onclick="router.navigate('chapter', 5)">
-                    <div class="card-header"><span class="card-number">CH 05</span><div class="progress-circle" id="prog-ch5">0%</div></div>
-                    <h3>Gestion de la Communication</h3><p>Modèles, Canaux, Reporting.</p><button class="btn-cta">Accéder</button>
+                    <div class="card-header"><span class="card-number">EN 05</span><div class="progress-circle" id="prog-ch5">0%</div></div>
+                    <h3>Ensemble 5: Communication</h3><p>Modèles, Canaux, Reporting.</p><button class="btn-cta">Accéder</button>
                 </div>
-            </div>
-        </section>
-
-        <!-- GLOBAL REVIEW VIEW -->
-        <section id="view-review" class="view">
-            <header>
-                <h1>Révision Globale & Architecture</h1>
-                <p>Synthèse Cognitive du Cycle de Vie et Structure WBS</p>
-            </header>
-
-            <div class="review-container">
-                <div class="summary-box" style="margin-top: 2rem; border-left-color: var(--primary-neon);">
-                    <h3 style="color: var(--primary-neon)">Le Modèle Mental du Projet</h3>
-                    <p>Un projet n'est pas une liste de tâches, c'est un système temporaire visant à créer une valeur unique. La réussite repose sur l'équilibre dynamique entre <strong>Contenu</strong>, <strong>Délais</strong> et <strong>Coûts</strong>, piloté par une <strong>Intégration</strong> rigoureuse.</p>
+                <div class="card" onclick="router.navigate('chapter', 6)">
+                    <div class="card-header"><span class="card-number">QC 01</span><div class="progress-circle" id="prog-ch6">0%</div></div>
+                    <h3>Quiz de Classe (1-3)</h3><p>PMBOK Chapitres 1, 2, 3.</p><button class="btn-cta">Accéder</button>
                 </div>
-                <!-- ... (Review content kept same as previous for brevity) ... -->
-                <div style="padding: 2rem 0; text-align: center;">
-                    <h2>Révision Complète</h2>
-                    <p>Utilisez le Quiz par chapitre pour tester vos connaissances spécifiques.</p>
+                <div class="card" onclick="router.navigate('chapter', 7)">
+                    <div class="card-header"><span class="card-number">QC 02</span><div class="progress-circle" id="prog-ch7">0%</div></div>
+                    <h3>Quiz de Classe (4-5)</h3><p>Gestion des Délais et des Coûts.</p><button class="btn-cta">Accéder</button>
                 </div>
             </div>
         </section>
@@ -369,9 +319,9 @@
             <article class="summary-box"><h3 style="color: var(--secondary-neon)">Synthèse Cognitive</h3><div id="ch-summary"></div></article>
             <div class="concept-grid" id="ch-concepts"></div>
             <div style="text-align: center; margin-top: 3rem;">
-                <h2>Évaluation Chapitre (35 Questions)</h2>
-                <p>Testez votre compréhension des concepts clés.</p>
-                <button class="btn-nav" onclick="quizEngine.startQuiz()">Lancer le Quiz</button>
+                <h2 id="quiz-info-title">Évaluation</h2>
+                <p id="quiz-info-desc">Testez votre compréhension.</p>
+                <button class="btn-nav" id="btn-start-quiz" onclick="quizEngine.startQuiz()">Lancer le Quiz</button>
             </div>
         </section>
 
@@ -379,8 +329,11 @@
         <section id="view-quiz" class="view">
             <div class="quiz-container">
                 <div style="display: flex; justify-content: space-between; color: var(--text-muted); font-family: var(--font-mono); font-size: 0.8rem;">
-                    <span id="quiz-progress-q">Question 1/35</span>
-                    <span>Score: <span id="quiz-current-score" style="color: var(--primary-neon)">0</span></span>
+                    <span id="quiz-progress-q">Question 1/36</span>
+                    <div style="display:flex; gap:1rem; align-items:center;">
+                        <span class="hidden" id="quiz-timer-text" style="font-size:1.2rem; color:var(--warning-neon);">00:00</span>
+                        <span>Score: <span id="quiz-current-score" style="color: var(--primary-neon)">0</span></span>
+                    </div>
                 </div>
                 <div class="timer-bar"><div class="timer-fill" id="quiz-timer"></div></div>
                 <div class="question-text" id="quiz-question">...</div>
@@ -400,7 +353,7 @@
                     <span style="font-size: 0.9rem; display: block;">EXAMEN FINAL (100 Questions)</span>
                 </div>
                 <div style="width: 100%; display: flex; justify-content: space-between; align-items: center; margin-top: 5px;">
-                    <div class="exam-timer" id="exam-timer">01:30:00</div>
+                    <div class="exam-timer" id="exam-timer">00:50:00</div>
                     <button onclick="examEngine.toggleNotes()" class="btn-cta" style="width: auto; margin: 0; font-size: 0.8rem; padding: 5px 10px;">NOTES</button>
                 </div>
                 <div style="width: 100%; text-align: right; margin-top: 5px;">
@@ -409,7 +362,7 @@
             </div>
             <div style="display: flex; flex: 1; overflow: hidden; flex-direction: column; position: relative;">
                 <div class="exam-body">
-                    <div class="exam-body-inner">
+                    <div class="exam-body-inner exam-question-wrapper" id="exam-content-wrapper">
                         <h2 style="color: var(--text-muted)">Question <span id="exam-q-num">1</span>/100</h2>
                         <div class="question-text" id="exam-question" style="font-size: 1.2rem; justify-content: flex-start; text-align: left;"></div>
                         <div class="options-grid" id="exam-options"></div>
@@ -446,244 +399,330 @@
 </div>
 
 <script>
-/* --- DATA & LOGIC --- */
-// 35 UNIQUE QUESTIONS PER CHAPTER (MANUALLY CURATED FOR QUALITY)
+function shuffleArray(array) {
+    for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+    }
+    return array;
+}
+
+// DATA WITH DIFFICULTY LEVELS (Hard/Medium split requested)
 const rawCourseData = {
     1: {
-        title: "La Notion de Projet",
+        title: "Ensemble 1: La Notion de Projet",
         summary: "Un projet est une entreprise temporaire décidée dans le but de créer un produit, service ou résultat unique.",
         concepts: [{ title: "Triple Contrainte", desc: "Contenu, Délai, Coût" }],
         questions: [
-            { q: "Qu'est-ce qui caractérise un projet par rapport aux opérations ?", options: ["Récurrent", "Temporaire", "Permanent", "Linéaire"], ans: 1 },
-            { q: "La triple contrainte du projet inclut généralement :", options: ["Qualité, Vitesse, Coût", "Contenu, Délai, Coût", "Risque, Qualité, Temps", "Plan, Exécution, Contrôle"], ans: 1 },
-            { q: "Qu'est-ce que l'élaboration progressive ?", options: ["Allonger le délai", "Définir progressivement le contenu", "Augmenter le budget", "Réduire l'équipe"], ans: 1 },
-            { q: "Quel approche est recommandée pour un travail fortement incertain ?", options: ["Prédictive", "Hybride uniquement", "Agile/Adaptative", "En cascade"], ans: 2 },
-            { q: "Un livrable peut-il durer des siècles ?", options: ["Non", "Oui (ex: Monument)", "Seulement si digital", "Oui, c'est le projet qui dure"], ans: 1 },
-            { q: "Dans l'approche Agile, le travail est divisé en :", options: ["Phases longues", "Itérations (Sprints)", "Jalons annuels", "Contrats fermés"], ans: 1 },
-            { q: "Lequel n'est pas un principe de management de projet ?", options: ["Favoriser le changement", "Ignorer les parties prenantes", "Se concentrer sur la valeur", "Être un leader"], ans: 1 },
-            { q: "Le projet est autorisé par :", options: ["L'équipe", "Un besoin/Idée/Obligation", "Le hasard", "Le logiciel"], ans: 1 },
-            { q: "Qui définit l'objectif de valeur ?", options: ["Le chef de projet", "Le sponsor et l'entreprise", "L'équipe technique", "Le fournisseur"], ans: 1 },
-            { q: "Qu'est-ce qui différencie un produit d'un projet ?", options: ["Le coût", "Le projet est le processus, le produit le résultat", "La durée", "La qualité"], ans: 1 },
-            { q: "L'approche prédictive est adaptée à :", options: ["Travail incertain", "Travail définissable", "Changements fréquents", "Budget inconnu"], ans: 1 },
-            { q: "La valeur commerciale d'un projet dépend de :", options: ["Le nombre de réunions", "L'état futur souhaité", "La couleur du logo", "Le logiciel utilisé"], ans: 1 },
-            { q: "Le management de projet est l'application de :", options: ["Techniques uniquement", "Connaissances, compétences, outils", "Uniquement des réunions", "Uniquement la planification"], ans: 1 },
-            { q: "Qu'est-ce qu'une partie prenante ?", options: ["Uniquement le client", "Tout individu affecté par le projet", "Uniquement le chef de projet", "Un outil logiciel"], ans: 1 },
-            { q: "Le système de management de projet inclut :", options: ["Outils et ressources", "Uniquement les coûts", "Uniquement le temps", "Uniquement le chef"], ans: 0 },
-            { q: "La fin du projet est atteinte quand :", options: ["L'équipe est fatiguée", "Les objectifs sont atteints ou le projet abandonné", "Le temps est écoulé", "Le sponsor le dit"], ans: 1 },
-            { q: "Le terme 'unique' pour un projet signifie :", options: ["Se produit une fois", "Unique dans ses caractéristiques", "Très cher", "Secret"], ans: 1 },
-            { q: "Le mode projet répond à :", options: ["L'accélération des changements", "La stagnation", "Le refus d'innovation", "La peur de l'avenir"], ans: 0 },
-            { q: "Une opération est :", options: ["Temporaire", "Continue et répétitive", "Unique", "Incertaine"], ans: 1 },
-            { q: "Qu'est-ce que la complexité d'un projet ?", options: ["Un facteur externe uniquement", "Un enjeu qui nécessite une organisation spécifique", "Un avantage", "Une erreur de calcul"], ans: 1 },
-            { q: "La triple contrainte est aussi appelée :", options: ["Triangle de fer", "Triangle des contraintes", "Carré magique", "Cercle de la vie"], ans: 1 },
-            { q: "Si le contenu augmente, que se passe-t-il généralement ?", options: ["Le délai et le coût diminuent", "Le délai et le coût augmentent", "La qualité diminue", "L'équipe part"], ans: 1 },
-            { q: "L'élaboration progressive permet de :", options: ["Planifier tout au début", "Maîtriser le contenu au fur et à mesure", "Faire travailler plus l'équipe", "Pousser le chef de projet"], ans: 1 },
-            { q: "Scrum est un exemple de :", options: ["Approche prédictive", "Framework Agile", "Loi", "Outil de dessin"], ans: 1 },
-            { q: "Qu'est-ce qu'un Sprint ?", options: ["Une course", "Une itération de travail en Agile", "Une pause café", "Un bug"], ans: 1 },
-            { q: "L'équipe projet est :", options: ["Transitoire", "Permanente", "Héritée", "Virtuelle uniquement"], ans: 0 },
-            { q: "Le sponsor du projet est :", options: ["Celui qui fait le travail", "Celui qui fournit les ressources et autorité", "Le stagiaire", "Le client final"], ans: 1 },
-            { q: "La transition d'une phase à l'autre implique :", options: ["Un transfert technique", "Une fête", "Un paiement", "Une démission"], ans: 0 },
-            { q: "Qui valide le livrable ?", options: ["Le chef de projet seul", "Le client ou commanditaire", "L'équipe de développement", "Le fournisseur"], ans: 1 },
-            { q: "Qu'est-ce que l'optimisation de la réponse aux risques ?", options: ["Ignorer les risques", "Maximiser les opportunités et minimiser les menaces", "Prendre tous les risques", "Fermer les yeux"], ans: 1 },
-            { q: "L'adaptabilité signifie :", options: ["Ne jamais changer", "Changer de direction selon le contexte", "Suivre aveuglément le plan", "S'opposer au changement"], ans: 1 },
-            { q: "Le leadership en projet est :", options: ["Autoritaire uniquement", "Un comportement de leader guidant l'équipe", "Inutile", "Réservé au CEO"], ans: 1 },
-            { q: "La collaboration vise à :", options: ["Créer un environnement d'équipe performant", "Travailler seul", "Ne jamais se parler", "Utiliser des logiciels"], ans: 0 },
-            { q: "La valeur est :", options: ["Ce que le client considère comme important", "Le prix du projet", "La vitesse d'exécution", "Le nombre de documents"], ans: 0 },
-            { q: "Un domaine de performance est :", options: ["Un sujet unique", "Un groupe d'activités essentielles", "Un outil", "Une salle de réunion"], ans: 1 },
-            { q: "Qu'est-ce que la résilience ?", options: ["S'effondrer", "S'adapter aux chocs et récupérer", "Partir vite", "Ne jamais échouer"], ans: 1 }
+            { q: "Qu'est-ce qui caractérise un projet par rapport aux opérations ?", options: ["Récurrent", "Temporaire", "Permanent", "Linéaire"], ans: 1, diff: "medium" },
+            { q: "La triple contrainte du projet inclut généralement :", options: ["Qualité, Vitesse, Coût", "Contenu, Délai, Coût", "Risque, Qualité, Temps", "Plan, Exécution, Contrôle"], ans: 1, diff: "medium" },
+            { q: "Qu'est-ce que l'élaboration progressive ?", options: ["Allonger le délai", "Définir progressivement le contenu", "Augmenter le budget", "Réduire l'équipe"], ans: 1, diff: "hard" },
+            { q: "Quel approche est recommandée pour un travail fortement incertain ?", options: ["Prédictive", "Hybride uniquement", "Agile/Adaptative", "En cascade"], ans: 2, diff: "hard" },
+            { q: "Un livrable peut-il durer des siècles ?", options: ["Non", "Oui (ex: Monument)", "Seulement si digital", "Oui, c'est le projet qui dure"], ans: 1, diff: "hard" }, // Nuanced
+            { q: "Dans l'approche Agile, le travail est divisé en :", options: ["Phases longues", "Itérations (Sprints)", "Jalons annuels", "Contrats fermes"], ans: 1, diff: "medium" },
+            { q: "Lequel n'est pas un principe de management de projet ?", options: ["Favoriser le changement", "Ignorer les parties prenantes", "Se concentrer sur la valeur", "Être un leader"], ans: 1, diff: "hard" },
+            { q: "Le projet est autorisé par :", options: ["L'équipe", "Un besoin/Idée/Obligation", "Le hasard", "Le logiciel"], ans: 1, diff: "hard" },
+            { q: "Qui définit l'objectif de valeur ?", options: ["Le chef de projet", "Le sponsor et l'entreprise", "L'équipe technique", "Le fournisseur"], ans: 1, diff: "hard" },
+            { q: "Qu'est-ce qui différencie un produit d'un projet ?", options: ["Le coût", "Le projet est le processus, le produit le résultat", "La durée", "La qualité"], ans: 1, diff: "hard" },
+            { q: "L'approche prédictive est adaptée à :", options: ["Travail incertain", "Travail définissable", "Changements fréquents", "Budget inconnu"], ans: 1, diff: "hard" },
+            { q: "La valeur commerciale d'un projet dépend de :", options: ["Le nombre de réunions", "L'état futur souhaité", "La couleur du logo", "Le logiciel utilisé"], ans: 1, diff: "hard" },
+            { q: "Le management de projet est l'application de :", options: ["Techniques uniquement", "Connaissances, compétences, outils", "Uniquement des réunions", "Uniquement la planification"], ans: 1, diff: "medium" },
+            { q: "Qu'est-ce qu'une partie prenante ?", options: ["Uniquement le client", "Tout individu affecté par le projet", "Uniquement le chef de projet", "Un outil logiciel"], ans: 1, diff: "medium" },
+            { q: "Le système de management de projet inclut :", options: ["Outils et ressources", "Uniquement les coûts", "Uniquement le temps", "Uniquement le chef"], ans: 0, diff: "hard" },
+            { q: "La fin du projet est atteinte quand :", options: ["L'équipe est fatiguée", "Les objectifs sont atteints ou le projet abandonné", "Le temps est écoulé", "Le sponsor le dit"], ans: 1, diff: "hard" },
+            { q: "Le terme 'unique' pour un projet signifie :", options: ["Se produit une fois", "Unique dans ses caractéristiques", "Très cher", "Secret"], ans: 1, diff: "hard" },
+            { q: "Le mode projet répond à :", options: ["L'accélération des changements", "La stagnation", "Le refus d'innovation", "La peur de l'avenir"], ans: 0, diff: "hard" },
+            { q: "Une opération est :", options: ["Temporaire", "Continue et répétitive", "Unique", "Incertaine"], ans: 1, diff: "medium" },
+            { q: "Qu'est-ce que la complexité d'un projet ?", options: ["Un facteur externe uniquement", "Un enjeu qui nécessite une organisation spécifique", "Un avantage", "Une erreur de calcul"], ans: 1, diff: "hard" },
+            { q: "La triple contrainte est aussi appelée :", options: ["Triangle de fer", "Triangle des contraintes", "Carré magique", "Cercle de la vie"], ans: 1, diff: "medium" },
+            { q: "Si le contenu augmente, que se passe-t-il généralement ?", options: ["Le délai et le coût diminuent", "Le délai et le coût augmentent", "La qualité diminue", "L'équipe part"], ans: 1, diff: "hard" },
+            { q: "L'élaboration progressive permet de :", options: ["Planifier tout au début", "Maîtriser le contenu au fur et à mesure", "Faire travailler plus l'équipe", "Pousser le chef de projet"], ans: 1, diff: "hard" },
+            { q: "Scrum est un exemple de :", options: ["Approche prédictive", "Framework Agile", "Loi", "Outil de dessin"], ans: 1, diff: "medium" },
+            { q: "Qu'est-ce qu'un Sprint ?", options: ["Une course", "Une itération de travail en Agile", "Une pause café", "Un bug"], ans: 1, diff: "medium" },
+            { q: "L'équipe projet est :", options: ["Transitoire", "Permanente", "Héritée", "Virtuelle uniquement"], ans: 0, diff: "hard" },
+            { q: "Le sponsor du projet est :", options: ["Celui qui fait le travail", "Celui qui fournit les ressources et autorité", "Le stagiaire", "Le client final"], ans: 1, diff: "hard" },
+            { q: "La transition d'une phase à l'autre implique :", options: ["Un transfert technique", "Une fête", "Un paiement", "Une démission"], ans: 0, diff: "hard" },
+            { q: "Qui valide le livrable ?", options: ["Le chef de projet seul", "Le client ou commanditaire", "L'équipe de développement", "Le fournisseur"], ans: 1, diff: "medium" },
+            { q: "Qu'est-ce que l'optimisation de la réponse aux risques ?", options: ["Ignorer les risques", "Maximiser les opportunités et minimiser les menaces", "Prendre tous les risques", "Fermer les yeux"], ans: 1, diff: "hard" },
+            { q: "L'adaptabilité signifie :", options: ["Ne jamais changer", "Changer de direction selon le contexte", "Suivre aveuglément le plan", "S'opposer au changement"], ans: 1, diff: "hard" },
+            { q: "Le leadership en projet est :", options: ["Autoritaire uniquement", "Un comportement de leader guidant l'équipe", "Inutile", "Réservé au CEO"], ans: 1, diff: "hard" },
+            { q: "La collaboration vise à :", options: ["Créer un environnement d'équipe performant", "Travailler seul", "Ne jamais se parler", "Utiliser des logiciels"], ans: 0, diff: "medium" },
+            { q: "La valeur est :", options: ["Ce que le client considère comme important", "Le prix du projet", "La vitesse d'exécution", "Le nombre de documents"], ans: 0, diff: "hard" },
+            { q: "Un domaine de performance est :", options: ["Un sujet unique", "Un groupe d'activités essentielles", "Un outil", "Une salle de réunion"], ans: 1, diff: "hard" },
+            { q: "Qu'est-ce que la résilience ?", options: ["S'effondrer", "S'adapter aux chocs et récupérer", "Partir vite", "Ne jamais échouer"], ans: 1, diff: "hard" },
+            { q: "Comment appelle-t-on un projet qui n'a pas de fin définie ?", options: ["Un programme", "Une opération", "Un sous-projet", "Une stratégie"], ans: 0, diff: "hard" },
+            { q: "Quel est l'inconvénient principal de l'élaboration excessive ?", options: ["Trop de détail", "Coût élevé des changements tardifs", "Équipe trop grande", "Pas de budget"], ans: 1, diff: "hard" },
+            { q: "Quelle est la distinction entre 'Produit' et 'Projet' ?", options: ["Aucune", "Le résultat vs l'effort pour le créer", "Le prix vs la qualité", "Le client vs le fournisseur"], ans: 1, diff: "hard" },
+            { q: "Qu'est-ce que la 'Création de valeur' ?", options: ["Le coût", "L'augmentation des bénéfices", "La livraison d'un service utile", "La qualité"], ans: 2, diff: "hard" }
         ]
     },
     2: {
-        title: "Management de l'Intégration",
+        title: "Ensemble 2: Management de l'Intégration",
         summary: "Coordonner tous les processus de management. De la Charte à la Clôture.",
         concepts: [{ title: "Charte", desc: "Autorise le projet." }],
         questions: [
-            { q: "Quel document donne l'autorité au chef de projet ?", options: ["Le WBS", "La Charte du projet", "Le PV", "L'échéancier"], ans: 1 },
-            { q: "Quel est le but principal du Plan de Management ?", options: ["Définir le budget", "Décrire l'exécution et la maîtrise", "Recruter l'équipe", "Acheter des matériaux"], ans: 1 },
-            { q: "La clôture administrative inclut :", options: ["Paiement des fournisseurs", "Archivage des informations", "Destruction des documents", "Négociation de contrats"], ans: 1 },
-            { q: "Que faire en cas de changement non approuvé ?", options: ["L'ignorer", "Le mettre en œuvre", "Le rejeter et documenter", "L'inclure dans le prochain plan"], ans: 2 },
-            { q: "L'intégration du projet concerne :", options: ["Uniquement les coûts", "Uniquement la qualité", "La coordination de tous les processus", "Uniquement la communication"], ans: 2 },
-            { q: "Qui émet la charte du projet ?", options: ["L'équipe projet", "Le sponsor ou initiateur", "Le chef de projet", "Le client final"], ans: 1 },
-            { q: "Le coût d'une modification est-il plus élevé en fin de projet ?", options: ["Non", "Oui, généralement", "C'est égal", "C'est moins cher"], ans: 1 },
-            { q: "Qu'est-ce que la gestion des connaissances ?", options: ["Stocker des fichiers", "Utiliser connaissances existantes et acquérir nouvelles", "Former le sponsor", "Ignorer l'expérience passée"], ans: 1 },
-            { q: "Diriger et gérer le travail consiste à :", options: ["Réunir", "Exécuter le travail défini dans le PMP", "Dormir", "Planifier à nouveau"], ans: 1 },
-            { q: "Qu'est-ce que l'anticipation des problèmes ?", options: ["Attendre qu'ils arrivent", "Traiter les problèmes avant qu'ils soient critiques", "Ignorer", "Paniquer"], ans: 1 },
-            { q: "Le Plan de Management (PMP) est :", options: ["Un document statique", "Un document décrivant comment exécuter et maîtriser", "Un contrat", "Une feuille de calcul"], ans: 1 },
-            { q: "La maîtrise des changements inclut :", options: ["Revoir et approuver les modifications", "Refuser tout changement", "Changer tout ce qu'on veut", "Demander au client à la fin"], ans: 0 },
-            { q: "La clôture de contrat concerne :", options: ["L'équipe interne", "Le fournisseur externe", "Le café", "Les réunions"], ans: 1 },
-            { q: "Qu'est-ce que la prévision (Forecast) ?", options: ["Regarder le passé", "Estimer les performances futures", "Deviner", "Ignorer"], ans: 1 },
-            { q: "La gestion de l'intégration nécessite :", options: ["Des compétences de négociation", "Uniquement Excel", "Uniquement Word", "Uniquement PowerPoint"], ans: 0 },
-            { q: "Qui valide que le travail est achevé ?", options: ["Le chef de projet", "Le processus de clôture", "Le client", "L'ordinateur"], ans: 1 },
-            { q: "Le document de projet contient :", options: ["Stratégie, outils, procédures", "Uniquement des images", "Uniquement le logo", "Des blagues"], ans: 0 },
-            { q: "L'actif organisationnel est :", options: ["Outils et techniques internes", "Une loi", "Un virus", "Un partenaire"], ans: 0 },
-            { q: "Les facteurs environnementaux sont :", options: ["La météo", "La culture de l'entreprise et le marché", "Le nombre de fenêtres", "La couleur des murs"], ans: 1 },
-            { q: "La charte lie le projet à :", options: ["L'objectif stratégique de l'entreprise", "L'ordinateur", "Le parking", "La cafétéria"], ans: 0 },
-            { q: "Combien de processus dans le groupe de démarrage ?", options: ["5", "2", "10", "0"], ans: 1 },
-            { q: "Combien de processus dans le groupe de clôture ?", options: ["5", "1", "10", "0"], ans: 1 },
-            { q: "L'intégration gère les dépendances entre :", options: ["Les outils logiciels", "Les processus et les parties prenantes", "Les chaises", "Les tables"], ans: 1 },
-            { q: "Qui paie les factures ?", options: ["Le chef de projet", "Le financeur (Sponsor)", "Le stagiaire", "Personne"], ans: 1 },
-            { q: "Qu'est-ce qu'une action corrective ?", options: ["Punir l'équipe", "Ramener le projet dans les rails", "Crier", "Partir"], ans: 1 },
-            { q: "La gestion des connaissances favorise :", options: ["Le secret", "Le partage et l'apprentissage", "L'oubli", "Le gaspillage"], ans: 1 },
-            { q: "La maîtrise du projet concerne :", options: ["Uniquement le chef", "Toute l'équipe", "Uniquement le sponsor", "Le chatbot"], ans: 1 },
-            { q: "Le changement est un processus :", options: ["Facultatif", "Obligatoire pour tout projet", "Interdit", "Magique"], ans: 1 },
-            { q: "Qu'est-ce qu'une action préventive ?", options: ["Réagir à un problème", "Éviter un problème potentiel", "Cacher un problème", "Inventer un problème"], ans: 1 },
-            { q: "La documentation du projet inclut :", options: ["Tous les enregistrements", "Uniquement le plan", "Uniquement les emails du chef", "Rien"], ans: 0 },
-            { q: "L'intégration est le domaine de connaissance :", options: ["Le plus simple", "Le plus complexe (coordination)", "Le plus inutile", "Le plus court"], ans: 1 },
-            { q: "Pourquoi l'intégration est-elle difficile ?", options: ["Il faut coordonner tout le monde", "C'est facile", "Il n'y a pas de problèmes", "C'est automatique"], ans: 0 },
-            { q: "Le rôle du chef de projet en intégration est :", options: ["Central et coordinateur", "Isolé", "Absent", "Passif"], ans: 0 },
-            { q: "Qu'est-ce que l'approbation formelle ?", options: ["Dire 'OK' vite", "Signature documentée d'un livrable", "Un hochement de tête", "Un SMS"], ans: 1 }
+            { q: "Quel document donne l'autorité au chef de projet ?", options: ["Le WBS", "La Charte du projet", "Le PV", "L'échéancier"], ans: 1, diff: "medium" },
+            { q: "Quel est le but principal du Plan de Management ?", options: ["Définir le budget", "Décrire l'exécution et la maîtrise", "Recruter l'équipe", "Acheter des matériaux"], ans: 1, diff: "hard" },
+            { q: "La clôture administrative inclut :", options: ["Paiement des fournisseurs", "Archivage des informations", "Destruction des documents", "Négociation de contrats"], ans: 1, diff: "hard" },
+            { q: "Que faire en cas de changement non approuvé ?", options: ["L'ignorer", "Le mettre en œuvre", "Le rejeter et documenter", "L'inclure dans le prochain plan"], ans: 2, diff: "hard" },
+            { q: "L'intégration du projet concerne :", options: ["Uniquement les coûts", "Uniquement la qualité", "La coordination de tous les processus", "Uniquement la communication"], ans: 2, diff: "hard" },
+            { q: "Qui émet la charte du projet ?", options: ["L'équipe projet", "Le sponsor ou initiateur", "Le chef de projet", "Le client final"], ans: 1, diff: "hard" },
+            { q: "Le coût d'une modification est-il plus élevé en fin de projet ?", options: ["Non", "Oui, généralement", "C'est égal", "C'est moins cher"], ans: 1, diff: "medium" },
+            { q: "Qu'est-ce que la gestion des connaissances ?", options: ["Stocker des fichiers", "Utiliser connaissances existantes et acquérir nouvelles", "Former le sponsor", "Ignorer l'expérience passée"], ans: 1, diff: "hard" },
+            { q: "Diriger et gérer le travail consiste à :", options: ["Réunir", "Exécuter le travail défini dans le PMP", "Dormir", "Planifier à nouveau"], ans: 1, diff: "hard" },
+            { q: "Qu'est-ce que l'anticipation des problèmes ?", options: ["Attendre qu'ils arrivent", "Traiter les problèmes avant qu'ils soient critiques", "Ignorer", "Paniquer"], ans: 1, diff: "hard" },
+            { q: "Le Plan de Management (PMP) est :", options: ["Un document statique", "Un document décrivant comment exécuter et maîtriser", "Un contrat", "Une feuille de calcul"], ans: 1, diff: "hard" },
+            { q: "La maîtrise des changements inclut :", options: ["Revoir et approuver les modifications", "Refuser tout changement", "Changer tout ce qu'on veut", "Demander au client à la fin"], ans: 0, diff: "medium" },
+            { q: "La clôture de contrat concerne :", options: ["L'équipe interne", "Le fournisseur externe", "Le café", "Les réunions"], ans: 1, diff: "medium" },
+            { q: "Qu'est-ce que la prévision (Forecast) ?", options: ["Regarder le passé", "Estimer les performances futures", "Deviner", "Ignorer"], ans: 1, diff: "hard" },
+            { q: "La gestion de l'intégration nécessite :", options: ["Des compétences de négociation", "Uniquement Excel", "Uniquement Word", "Uniquement PowerPoint"], ans: 0, diff: "medium" },
+            { q: "Qui valide que le travail est achevé ?", options: ["Le chef de projet", "Le processus de clôture", "Le client", "L'ordinateur"], ans: 1, diff: "medium" },
+            { q: "Le document de projet contient :", options: ["Stratégie, outils, procédures", "Uniquement des images", "Uniquement le logo", "Des blagues"], ans: 0, diff: "medium" },
+            { q: "L'actif organisationnel est :", options: ["Outils et techniques internes", "Une loi", "Un virus", "Un partenaire"], ans: 0, diff: "hard" },
+            { q: "Les facteurs environnementaux sont :", options: ["La météo", "La culture de l'entreprise et le marché", "Le nombre de fenêtres", "La couleur des murs"], ans: 1, diff: "hard" },
+            { q: "La charte lie le projet à :", options: ["L'objectif stratégique de l'entreprise", "L'ordinateur", "Le parking", "La cafétéria"], ans: 0, diff: "hard" },
+            { q: "Combien de processus dans le groupe de démarrage ?", options: ["5", "2", "10", "0"], ans: 1, diff: "medium" },
+            { q: "Combien de processus dans le groupe de clôture ?", options: ["5", "1", "10", "0"], ans: 1, diff: "medium" },
+            { q: "L'intégration gère les dépendances entre :", options: ["Les outils logiciels", "Les processus et les parties prenantes", "Les chaises", "Les tables"], ans: 1, diff: "hard" },
+            { q: "Qui paie les factures ?", options: ["Le chef de projet", "Le financeur (Sponsor)", "Le stagiaire", "Personne"], ans: 1, diff: "medium" },
+            { q: "Qu'est-ce qu'une action corrective ?", options: ["Punir l'équipe", "Ramener le projet dans les rails", "Crier", "Partir"], ans: 1, diff: "hard" },
+            { q: "La gestion des connaissances favorise :", options: ["Le secret", "Le partage et l'apprentissage", "L'oubli", "Le gaspillage"], ans: 1, diff: "medium" },
+            { q: "La maîtrise du projet concerne :", options: ["Uniquement le chef", "Toute l'équipe", "Uniquement le sponsor", "Le chatbot"], ans: 1, diff: "hard" },
+            { q: "Le changement est un processus :", options: ["Facultatif", "Obligatoire pour tout projet", "Interdit", "Magique"], ans: 1, diff: "hard" },
+            { q: "Qu'est-ce qu'une action préventive ?", options: ["Réagir à un problème", "Éviter un problème potentiel", "Cacher un problème", "Inventer un problème"], ans: 1, diff: "hard" },
+            { q: "La documentation du projet inclut :", options: ["Tous les enregistrements", "Uniquement le plan", "Uniquement les emails du chef", "Rien"], ans: 0, diff: "medium" },
+            { q: "L'intégration est le domaine de connaissance :", options: ["Le plus simple", "Le plus complexe (coordination)", "Le plus inutile", "Le plus court"], ans: 1, diff: "hard" },
+            { q: "Pourquoi l'intégration est-elle difficile ?", options: ["Il faut coordonner tout le monde", "C'est facile", "Il n'y a pas de problèmes", "C'est automatique"], ans: 0, diff: "medium" },
+            { q: "Le rôle du chef de projet en intégration est :", options: ["Central et coordinateur", "Isolé", "Absent", "Passif"], ans: 0, diff: "hard" },
+            { q: "Qu'est-ce que l'approbation formelle ?", options: ["Dire 'OK' vite", "Signature documentée d'un livrable", "Un hochement de tête", "Un SMS"], ans: 1, diff: "medium" }
         ]
     },
     3: {
-        title: "Management du Périmètre",
+        title: "Ensemble 3: Management du Périmètre",
         summary: "S'assurer que tout le travail requis est inclus (WBS).",
         concepts: [{ title: "WBS", desc: "Structure de découpage." }],
         questions: [
-            { q: "La WBS est une décomposition orientée vers :", options: ["Les coûts", "Les livrables", "Les personnes", "Le temps"], ans: 1 },
-            { q: "Qu'est-ce qu'un 'Lot de Travail' ?", options: ["Un package logiciel", "Le niveau le plus bas de la WBS", "L'équipe complète", "Le budget total"], ans: 1 },
-            { q: "Qui valide le contenu du projet ?", options: ["Le chef de projet seul", "Le client ou sponsor", "L'équipe technique", "Le fournisseur"], ans: 1 },
-            { q: "La 'Dérive du contenu' (Scope Creep) est :", options: ["Une méthode agile", "L'ajout non maîtrisé de travail", "La réduction du budget", "La fin du projet"], ans: 1 },
-            { q: "Quel outil permet de recueillir des exigences ?", options: ["Le diagramme de Gantt", "L'entretien", "Le budget", "Le WBS"], ans: 1 },
-            { q: "La différence entre contenu produit et projet est :", options: ["Aucune", "Fonctions vs travail pour créer le produit", "Coût vs qualité", "Début vs fin"], ans: 1 },
-            { q: "Continuer la décomposition jusqu'au 'lot de travail' permet de :", options: ["Augmenter le coût", "Rendre le travail plus difficile", "Rendre le travail gérable et estimable", "Créer plus de réunions"], ans: 2 },
-            { q: "Le contrôle qualité se fait généralement :", options: ["Après la validation", "Avant la validation", "Pendant la clôture", "Avant le démarrage"], ans: 1 },
-            { q: "Qu'est-ce qu'une exigence ?", options: ["Un besoin ou une capacité", "Un désir vague", "Une idée folle", "Un rêve"], ans: 0 },
-            { q: "La collecte des exigences est :", options: ["Inutile", "Nécessaire pour définir le périmètre", "Optionnelle", "Seulement pour le logiciel"], ans: 1 },
-            { q: "Qui sont les parties prenantes pour les exigences ?", options: ["Le client uniquement", "Toute personne impactée", "Le patron du chef", "Le gardien"], ans: 1 },
-            { q: "Qu'est-ce qu'un prototype ?", options: ["Un modèle fonctionnel du produit", "Un produit fini", "Un dessin", "Un plan de maison"], ans: 0 },
-            { q: "La définition du contenu du projet inclut :", options: ["Le travail à faire pour créer le produit", "Uniquement le budget", "Uniquement le temps", "Le prix"], ans: 0 },
-            { q: "La validation du contenu est :", options: ["Formaliser l'acceptation", "Vérifier la qualité", "Payer", "Livrer"], ans: 0 },
-            { q: "La vérification de la qualité est :", options: ["Accepter le produit", "Vérifier qu'il respecte les exigences", "L'acheter", "L'emballer"], ans: 1 },
-            { q: "La maîtrise du contenu surveille :", options: ["L'humeur du chef", "L'état des livrables et du travail", "La météo", "Le trafic"], ans: 1 },
-            { q: "Si une exigence n'est pas approuvée :", options: ["On la fait quand même", "On la retire du projet", "On la cache", "On augmente le budget"], ans: 1 },
-            { q: "Le dictionnaire de la WBS contient :", options: ["Des définitions de mots", "Des détails sur chaque élément", "Des blagues", "Des photos"], ans: 1 },
-            { q: "Qui crée la WBS ?", options: ["Le client", "L'équipe projet (souvent aidée du PM)", "Le fournisseur", "Le comptable"], ans: 1 },
-            { q: "La WBS facilite :", options: ["La création d'ennuis", "L'estimation des coûts et délais", "La confusion", "Le gaspillage"], ans: 1 },
-            { q: "L'étude de faisabilité fait partie de :", options: ["La clôture", "La collecte des exigences (parfois)", "Le dessert", "Le nettoyage"], ans: 1 },
-            { q: "Qu'est-ce que la gestion de la configuration ?", options: ["Gérer les changements de version", "Gérer la clim", "Gérer les chaises", "Gérer l'humidité"], ans: 0 },
-            { q: "La décomposition est une technique :", options: ["Magique", "De subdivision du travail", "De construction", "De destruction"], ans: 1 },
-            { q: "Le niveau 1 de la WBS est :", options: ["Un lot de travail", "Le projet entier", "Une tâche", "Une heure"], ans: 1 },
-            { q: "Qu'est-ce qu'un livrable ?", options: ["Une réunion", "Un résultat unique et vérifiable", "Une idée", "Un sentiment"], ans: 1 },
-            { q: "Le périmètre du produit est :", options: ["Les fonctionnalités", "Le travail pour le créer", "Le budget", "Le temps"], ans: 0 },
-            { q: "Si on ajoute une fonctionnalité sans payer :", options: ["C'est une dérive positive", "C'est une dérive négative (non contrôlée)", "C'est normal", "C'est interdit par la loi"], ans: 1 },
-            { q: "L'atelier de travail est :", options: ["Une salle de réunion", "Une méthode collaborative de recueil", "Un atelier de bricolage", "Une usine"], ans: 1 },
-            { q: "L'analyse de document sert à :", options: ["Jeter les vieux papiers", "Trouver des exigences implicites", "Dessiner", "Dormir"], ans: 1 },
-            { q: "Qui peut rejeter un livrable ?", options: ["Le chef de projet", "Le client/Utilisateur final", "L'équipe", "Le stagiaire"], ans: 1 },
-            { q: "La maîtrise du contenu prévient :", options: ["Le succès", "L'échec", "La dérive et les modifications non approuvées", "La fatigue"], ans: 2 },
-            { q: "La définition du périmètre du projet inclut :", options: ["Une description détaillée", "Une idée vague", "Un dessin rapide", "Un slogan"], ans: 0 },
-            { q: "Qu'est-ce que la planification de la gestion du contenu ?", options: ["Créer un plan d'action", "Créer un plan de gestion du contenu", "Ignorer le contenu", "Laisser le contenu grandir"], ans: 1 },
-            { q: "La collecte des exigences est un processus :", options: ["Itératif", "Une seule fois", "Inutile", "Impossible"], ans: 0 },
-            { q: "Le questionnaire est utile pour :", options: ["Grand nombre de personnes dispersées", "Comprendre les émotions", "Faire boire du café", "Peindre"], ans: 0 }
+            { q: "La WBS est une décomposition orientée vers :", options: ["Les coûts", "Les livrables", "Les personnes", "Le temps"], ans: 1, diff: "hard" },
+            { q: "Qu'est-ce qu'un 'Lot de Travail' ?", options: ["Un package logiciel", "Le niveau le plus bas de la WBS", "L'équipe complète", "Le budget total"], ans: 1, diff: "hard" },
+            { q: "Qui valide le contenu du projet ?", options: ["Le chef de projet seul", "Le client ou sponsor", "L'équipe technique", "Le fournisseur"], ans: 1, diff: "hard" },
+            { q: "La 'Dérive du contenu' (Scope Creep) est :", options: ["Une méthode agile", "L'ajout non maîtrisé de travail", "La réduction du budget", "La fin du projet"], ans: 1, diff: "medium" },
+            { q: "Quel outil permet de recueillir des exigences ?", options: ["Le diagramme de Gantt", "L'entretien", "Le budget", "Le WBS"], ans: 1, diff: "medium" },
+            { q: "La différence entre contenu produit et projet est :", options: ["Aucune", "Fonctions vs travail pour créer le produit", "Coût vs qualité", "Début vs fin"], ans: 1, diff: "hard" },
+            { q: "Continuer la décomposition jusqu'au 'lot de travail' permet de :", options: ["Augmenter le coût", "Rendre le travail plus difficile", "Rendre le travail gérable et estimable", "Créer plus de réunions"], ans: 2, diff: "hard" },
+            { q: "Le contrôle qualité se fait généralement :", options: ["Après la validation", "Avant la validation", "Pendant la clôture", "Avant le démarrage"], ans: 1, diff: "medium" },
+            { q: "Qu'est-ce qu'une exigence ?", options: ["Un besoin ou une capacité", "Un désir vague", "Une idée folle", "Un rêve"], ans: 0, diff: "medium" },
+            { q: "La collecte des exigences est :", options: ["Inutile", "Nécessaire pour définir le périmètre", "Optionnelle", "Seulement pour le logiciel"], ans: 1, diff: "hard" },
+            { q: "Qui sont les parties prenantes pour les exigences ?", options: ["Le client uniquement", "Toute personne impactée", "Le patron du chef", "Le gardien"], ans: 1, diff: "medium" },
+            { q: "Qu'est-ce qu'un prototype ?", options: ["Un modèle fonctionnel du produit", "Un produit fini", "Un dessin", "Un plan de maison"], ans: 0, diff: "medium" },
+            { q: "La définition du contenu du projet inclut :", options: ["Le travail à faire pour créer le produit", "Uniquement le budget", "Uniquement le temps", "Le prix"], ans: 0, diff: "medium" },
+            { q: "La validation du contenu est :", options: ["Formaliser l'acceptation", "Vérifier la qualité", "Payer", "Livrer"], ans: 0, diff: "hard" },
+            { q: "La vérification de la qualité est :", options: ["Accepter le produit", "Vérifier qu'il respecte les exigences", "L'acheter", "L'emballer"], ans: 1, diff: "hard" },
+            { q: "La maîtrise du contenu surveille :", options: ["L'humeur du chef", "L'état des livrables et du travail", "La météo", "Le trafic"], ans: 1, diff: "hard" },
+            { q: "Si une exigence n'est pas approuvée :", options: ["On la fait quand même", "On la retire du projet", "On la cache", "On augmente le budget"], ans: 1, diff: "medium" },
+            { q: "Le dictionnaire de la WBS contient :", options: ["Des définitions de mots", "Des détails sur chaque élément", "Des blagues", "Des photos"], ans: 1, diff: "medium" },
+            { q: "Qui crée la WBS ?", options: ["Le client", "L'équipe projet (souvent aidée du PM)", "Le fournisseur", "Le comptable"], ans: 1, diff: "hard" },
+            { q: "La WBS facilite :", options: ["La création d'ennuis", "L'estimation des coûts et délais", "La confusion", "Le gaspillage"], ans: 1, diff: "hard" },
+            { q: "L'étude de faisabilité fait partie de :", options: ["La clôture", "La collecte des exigences (parfois)", "Le dessert", "Le nettoyage"], ans: 1, diff: "medium" },
+            { q: "Qu'est-ce que la gestion de la configuration ?", options: ["Gérer les changements de version", "Gérer la clim", "Gérer les chaises", "Gérer l'humidité"], ans: 0, diff: "hard" },
+            { q: "La décomposition est une technique :", options: ["Magique", "De subdivision du travail", "De construction", "De destruction"], ans: 1, diff: "medium" },
+            { q: "Le niveau 1 de la WBS est :", options: ["Un lot de travail", "Le projet entier", "Une tâche", "Une heure"], ans: 1, diff: "medium" },
+            { q: "Qu'est-ce qu'un livrable ?", options: ["Une réunion", "Un résultat unique et vérifiable", "Une idée", "Un sentiment"], ans: 1, diff: "medium" },
+            { q: "Le périmètre du produit est :", options: ["Les fonctionnalités", "Le travail pour le créer", "Le budget", "Le temps"], ans: 0, diff: "hard" },
+            { q: "Si on ajoute une fonctionnalité sans payer :", options: ["C'est une dérive positive", "C'est une dérive négative (non contrôlée)", "C'est normal", "C'est interdit par la loi"], ans: 1, diff: "hard" },
+            { q: "L'atelier de travail est :", options: ["Une salle de réunion", "Une méthode collaborative de recueil", "Un atelier de bricolage", "Une usine"], ans: 1, diff: "hard" },
+            { q: "L'analyse de document sert à :", options: ["Jeter les vieux papiers", "Trouver des exigences implicites", "Dessiner", "Dormir"], ans: 1, diff: "hard" },
+            { q: "Qui peut rejeter un livrable ?", options: ["Le chef de projet", "Le client/Utilisateur final", "L'équipe", "Le stagiaire"], ans: 1, diff: "medium" },
+            { q: "La maîtrise du contenu prévient :", options: ["Le succès", "L'échec", "La dérive et les modifications non approuvées", "La fatigue"], ans: 2, diff: "medium" },
+            { q: "La définition du périmètre du projet inclut :", options: ["Une description détaillée", "Une idée vague", "Un dessin rapide", "Un slogan"], ans: 0, diff: "medium" },
+            { q: "Qu'est-ce que la planification de la gestion du contenu ?", options: ["Créer un plan d'action", "Créer un plan de gestion du contenu", "Ignorer le contenu", "Laisser le contenu grandir"], ans: 1, diff: "medium" },
+            { q: "La collecte des exigences est un processus :", options: ["Itératif", "Une seule fois", "Inutile", "Impossible"], ans: 0, diff: "hard" },
+            { q: "Le questionnaire est utile pour :", options: ["Grand nombre de personnes dispersées", "Comprendre les émotions", "Faire boire du café", "Peindre"], ans: 0, diff: "medium" }
         ]
     },
     4: {
-        title: "Délais et Coûts",
+        title: "Ensemble 4: Délais et Coûts",
         summary: "Chemin critique, marge et estimation budgétaire.",
         concepts: [{ title: "Chemin Critique", desc: "Durée la plus courte." }],
         questions: [
-            { q: "Le chemin critique représente :", options: ["Le chemin le plus cher", "Le chemin le plus long (durée minimale)", "Le chemin le plus court", "Les activités risquées"], ans: 1 },
-            { q: "Qu'est-ce que la marge (float) ?", options: ["L'argent économisé", "Le délai retardable sans impacter la fin", "Le pourcentage d'erreur", "Le bonus"], ans: 1 },
-            { q: "Quel diagramme montre des barres horizontales pour le temps ?", options: ["Réseau", "Gantt", "Flux de trésorerie", "Camembert"], ans: 1 },
-            { q: "La courbe en S (S-Curve) représente :", options: ["La vitesse de l'équipe", "Le cumul des coûts/valeur dans le temps", "Les risques", "La qualité"], ans: 1 },
-            { q: "Si une activité a une marge de 0, elle est :", options: ["Sur le chemin critique", "Terminée", "Non commencée", "Optionnelle"], ans: 0 },
-            { q: "L'estimation par analogie utilise :", options: ["Des données historiques", "Des calculs complexes", "L'intuition seule", "Le hasard"], ans: 0 },
-            { q: "Qu'est-ce que l'Estimation To Complete (ETC) ?", options: ["Le budget total", "Ce qu'il reste à dépenser", "Ce qui a été dépensé", "L'écart"], ans: 1 },
-            { q: "L'effort est-il la même chose que la durée ?", options: ["Oui", "Non (Effort = travail, Durée = temps calendrier)", "C'est pareil", "Dépend du client"], ans: 1 },
-            { q: "La date de début au plus tôt est :", options: ["Quand on veut", "Le plus tôt possible après dépendances", "La fin du projet", "Demain"], ans: 1 },
-            { q: "La date de fin au plus tard est :", options: ["Hier", "Le plus tard possible sans retarder le projet", "Jamais", "En 2100"], ans: 1 },
-            { q: "Qu'est-ce qu'un jalon ?", options: ["Une voiture", "Un point significatif dans le temps", "Un bug", "Une note"], ans: 1 },
-            { q: "L'estimation ascendante (Bottom-up) est :", options: ["Vite", "Précise mais longue", "Fausse", "Magique"], ans: 1 },
-            { q: "L'estimation paramétrique utilise :", options: ["Des sentiments", "Des formules mathématiques", "Des dés", "Un pendule"], ans: 1 },
-            { q: "La réserve pour aléas est :", options: ["Le budget de l'équipe", "Pour les risques connus identifiés", "Pour les inconnus inconnus", "Le café"], ans: 1 },
-            { q: "La réserve de gestion est :", options: ["Pour le café", "Pour les imprévus inconnus", "Pour les vacances", "Pour le parking"], ans: 1 },
-            { q: "L'écart de coût (CV) est :", options: ["EV - AC", "PV - EV", "EV - PV", "AC - EV"], ans: 0 },
-            { q: "L'indice de performance des coûts (CPI) est :", options: ["EV / AC", "AC / EV", "PV / EV", "EV / PV"], ans: 0 },
-            { q: "Si CPI < 1, le projet est :", options: ["Sous budget", "Au-dessus du budget", "Parfait", "Fini"], ans: 1 },
-            { q: "L'écart de délai (SV) est :", options: ["PV - EV", "EV - PV", "AC - EV", "PV - AC"], ans: 0 },
-            { q: "Qu'est-ce que le lissage (Leveling) ?", options: ["Aplatir la route", "Ajuster les ressources en cas de surcharge", "Changer la peinture", "Aplatir le papier"], ans: 1 },
-            { q: "Qu'est-ce que la compression (Crashing) ?", options: ["Ecraser le projet", "Ajouter des ressources (coût) pour réduire le temps", "Faire la grève", "Détruire les plans"], ans: 1 },
-            { q: "Le diagramme de réseau PERT utilise :", options: ["Des cercles et flèches", "Des barres", "Des photos", "Du texte"], ans: 0 },
-            { q: "La dépendance Fin-Début (FS) signifie :", options: ["Activité A commence quand B finit", "A finit quand B commence", "A et B commencent ensemble", "A et B finissent ensemble"], ans: 1 },
-            { q: "Le Fast Tracking consiste à :", options: ["Courir vite", "Faire des activités en parallèle (risqué)", "Manger vite", "Dormir vite"], ans: 1 },
-            { q: "La base de référence des coûts est :", options: ["Le budget initial approuvé", "Le coût final", "Le prix du ticket", "L'argent de poche"], ans: 0 },
-            { q: "L'estimation des coûts du projet sert à :", options: ["Déterminer le budget nécessaire", "Perdre du temps", "Faire peur", "Ignorer les coûts"], ans: 0 },
-            { q: "Les coûts directs sont :", options: ["Le café", "Main d'oeuvre, matériaux", "L'administration", "Le loyer"], ans: 1 },
-            { q: "Les coûts indirects sont :", options: ["Les salaires", "Les matériaux", "L'administration, frais généraux", "Le transport public"], ans: 2 },
-            { q: "Qu'est-ce que EAC (Estimate at Completion) ?", options: ["Coût total final prévu", "Début du projet", "Fin du projet", "Erreur"], ans: 0 },
-            { q: "Si SPI < 1 (Schedule Performance Index) :", options: ["On est en avance", "On est en retard", "On est parfait", "On n'a pas commencé"], ans: 1 },
-            { q: "La précision de l'estimation :", options: ["Augmente avec le temps", "Diminue avec le temps", "Est constante", "N'existe pas"], ans: 0 },
-            { q: "L'inflation est prise en compte dans :", options: ["L'estimation budgétaire", "Le rêve", "La peinture", "Le design"], ans: 0 },
-            { q: "Qu'est-ce que la gestion de la valeur acquise ?", options: ["Gagner de l'argent", "Intégrer portée, coût et temps", "Perdre de l'argent", "Compter les pièces"], ans: 1 },
-            { q: "Un retard sur le chemin critique :", options: ["Est grave", "N'est pas grave", "Est bon", "Est annulé"], ans: 0 },
-            { q: "L'activité fantôme (Ghost activity) est :", options: ["Une activité réelle", "Une activité fictive pour dépendances (rare)", "Un employé qui ne travaille pas", "Un bug"], ans: 1 },
-            { q: "La boucle de rétroaction (Feedback loop) en délais :", options: ["Comparaison Réel vs Plan", "Un tourne-disque", "Une rumeur", "Un email"], ans: 0 },
-            { q: "Qui valide l'échéancier ?", options: ["Le chef de projet seul", "L'équipe et les parties prenantes", "Le voisin", "Le chien"], ans: 1 },
-            { q: "La compression du calendrier peut causer :", options: ["Moins de travail", "Plus de risques et de coûts", "Moins de coûts", "Plus de vacances"], ans: 1 }
+            { q: "Le chemin critique représente :", options: ["Le chemin le plus cher", "Le chemin le plus long (durée minimale)", "Le chemin le plus court", "Les activités risquées"], ans: 1, diff: "hard" },
+            { q: "Qu'est-ce que la marge (float) ?", options: ["L'argent économisé", "Le délai retardable sans impacter la fin", "Le pourcentage d'erreur", "Le bonus"], ans: 1, diff: "hard" },
+            { q: "Quel diagramme montre des barres horizontales pour le temps ?", options: ["Réseau", "Gantt", "Flux de trésorerie", "Camembert"], ans: 1, diff: "medium" },
+            { q: "La courbe en S (S-Curve) représente :", options: ["La vitesse de l'équipe", "Le cumul des coûts/valeur dans le temps", "Les risques", "La qualité"], ans: 1, diff: "hard" },
+            { q: "Si une activité a une marge de 0, elle est :", options: ["Sur le chemin critique", "Terminée", "Non commencée", "Optionnelle"], ans: 0, diff: "hard" },
+            { q: "L'estimation par analogie utilise :", options: ["Des données historiques", "Des calculs complexes", "L'intuition seule", "Le hasard"], ans: 0, diff: "hard" },
+            { q: "Qu'est-ce que l'Estimation To Complete (ETC) ?", options: ["Le budget total", "Ce qu'il reste à dépenser", "Ce qui a été dépensé", "L'écart"], ans: 1, diff: "hard" },
+            { q: "L'effort est-il la même chose que la durée ?", options: ["Oui", "Non (Effort = travail, Durée = temps calendrier)", "C'est pareil", "Dépend du client"], ans: 1, diff: "hard" },
+            { q: "La date de début au plus tôt est :", options: ["Quand on veut", "Le plus tôt possible après dépendances", "La fin du projet", "Demain"], ans: 1, diff: "hard" },
+            { q: "La date de fin au plus tard est :", options: ["Hier", "Le plus tard possible sans retarder le projet", "Jamais", "En 2100"], ans: 1, diff: "hard" },
+            { q: "Qu'est-ce qu'un jalon ?", options: ["Une voiture", "Un point significatif dans le temps", "Un bug", "Une note"], ans: 1, diff: "medium" },
+            { q: "L'estimation ascendante (Bottom-up) est :", options: ["Vite", "Précise mais longue", "Fausse", "Magique"], ans: 1, diff: "hard" },
+            { q: "L'estimation paramétrique utilise :", options: ["Des sentiments", "Des formules mathématiques", "Des dés", "Un pendule"], ans: 1, diff: "hard" },
+            { q: "La réserve pour aléas est :", options: ["Le budget de l'équipe", "Pour les risques connus identifiés", "Pour les inconnus inconnus", "Le café"], ans: 1, diff: "hard" },
+            { q: "La réserve de gestion est :", options: ["Pour le café", "Pour les imprévus inconnus", "Pour les vacances", "Pour le parking"], ans: 1, diff: "hard" },
+            { q: "L'écart de coût (CV) est :", options: ["EV - AC", "PV - EV", "EV - PV", "AC - EV"], ans: 0, diff: "hard" },
+            { q: "L'indice de performance des coûts (CPI) est :", options: ["EV / AC", "AC / EV", "PV / EV", "EV / PV"], ans: 0, diff: "hard" },
+            { q: "Si CPI < 1, le projet est :", options: ["Sous budget", "Au-dessus du budget", "Parfait", "Fini"], ans: 1, diff: "hard" },
+            { q: "L'écart de délai (SV) est :", options: ["PV - EV", "EV - PV", "AC - EV", "PV - AC"], ans: 0, diff: "hard" },
+            { q: "Qu'est-ce que le lissage (Leveling) ?", options: ["Aplatir la route", "Ajuster les ressources en cas de surcharge", "Changer la peinture", "Aplatir le papier"], ans: 1, diff: "hard" },
+            { q: "Qu'est-ce que la compression (Crashing) ?", options: ["Ecraser le projet", "Ajouter des ressources (coût) pour réduire le temps", "Faire la grève", "Détruire les plans"], ans: 1, diff: "hard" },
+            { q: "Le diagramme de réseau PERT utilise :", options: ["Des cercles et flèches", "Des barres", "Des photos", "Du texte"], ans: 0, diff: "hard" },
+            { q: "La dépendance Fin-Début (FS) signifie :", options: ["Activité A commence quand B finit", "A finit quand B commence", "A et B commencent ensemble", "A et B finissent ensemble"], ans: 1, diff: "hard" },
+            { q: "Le Fast Tracking consiste à :", options: ["Courir vite", "Faire des activités en parallèle (risqué)", "Manger vite", "Dormir vite"], ans: 1, diff: "hard" },
+            { q: "La base de référence des coûts est :", options: ["Le budget initial approuvé", "Le coût final", "Le prix du ticket", "L'argent de poche"], ans: 0, diff: "medium" },
+            { q: "L'estimation des coûts du projet sert à :", options: ["Déterminer le budget nécessaire", "Perdre du temps", "Faire peur", "Ignorer les coûts"], ans: 0, diff: "medium" },
+            { q: "Les coûts directs sont :", options: ["Le café", "Main d'oeuvre, matériaux", "L'administration", "Le loyer"], ans: 1, diff: "medium" },
+            { q: "Les coûts indirects sont :", options: ["Les salaires", "Les matériaux", "L'administration, frais généraux", "Le transport public"], ans: 2, diff: "medium" },
+            { q: "Qu'est-ce que EAC (Estimate at Completion) ?", options: ["Coût total final prévu", "Début du projet", "Fin du projet", "Erreur"], ans: 0, diff: "hard" },
+            { q: "Si SPI < 1 (Schedule Performance Index) :", options: ["On est en avance", "On est en retard", "On est parfait", "On n'a pas commencé"], ans: 1, diff: "hard" },
+            { q: "La précision de l'estimation :", options: ["Augmente avec le temps", "Diminue avec le temps", "Est constante", "N'existe pas"], ans: 0, diff: "hard" },
+            { q: "L'inflation est prise en compte dans :", options: ["L'estimation budgétaire", "Le rêve", "La peinture", "Le design"], ans: 0, diff: "medium" },
+            { q: "Qu'est-ce que la gestion de la valeur acquise ?", options: ["Gagner de l'argent", "Intégrer portée, coût et temps", "Perdre de l'argent", "Compter les pièces"], ans: 1, diff: "hard" },
+            { q: "Un retard sur le chemin critique :", options: ["Est grave", "N'est pas grave", "Est bon", "Est annulé"], ans: 0, diff: "easy" },
+            { q: "L'activité fantôme (Ghost activity) est :", options: ["Une activité réelle", "Une activité fictive pour dépendances (rare)", "Un employé qui ne travaille pas", "Un bug"], ans: 1, diff: "hard" },
+            { q: "La boucle de rétroaction (Feedback loop) en délais :", options: ["Comparaison Réel vs Plan", "Un tourne-disque", "Une rumeur", "Un email"], ans: 0, diff: "hard" },
+            { q: "Qui valide l'échéancier ?", options: ["Le chef de projet seul", "L'équipe et les parties prenantes", "Le voisin", "Le chien"], ans: 1, diff: "medium" },
+            { q: "La compression du calendrier peut causer :", options: ["Moins de travail", "Plus de risques et de coûts", "Moins de coûts", "Plus de vacances"], ans: 1, diff: "hard" }
         ]
     },
     5: {
-        title: "Communication",
+        title: "Ensemble 5: Communication",
         summary: "Diffusion de l'information (Push, Pull, Interactive).",
         concepts: [{ title: "Canaux", desc: "Formule n(n-1)/2." }],
         questions: [
-            { q: "Combien de canaux pour 4 parties prenantes ?", options: ["4", "6", "8", "12"], ans: 1 },
-            { q: "Quel est le mode 'Push' ?", options: ["Site Intranet", "Lettre recommandée", "Réunion", "Discussion informelle"], ans: 1 },
-            { q: "Qu'est-ce que le 'Bruit' en communication ?", options: ["Un son fort", "Une barrière à la transmission", "Un logiciel", "Une réponse"], ans: 1 },
-            { q: "Une réunion est un exemple de communication :", options: ["Pull", "Push", "Interactive", "Non verbale"], ans: 2 },
-            { q: "L'e-mail est généralement une communication :", options: ["Interactive", "Push (parfois réponses interactives)", "Pull", "Visuelle uniquement"], ans: 1 },
-            { q: "Le chef de projet passe environ combien de temps à communiquer ?", options: ["10%", "50%", "90%", "100%"], ans: 2 },
-            { q: "Qu'est-ce qui peut bloquer la communication ?", options: ["La clarté", "L'hostilité", "Le bon vocabulaire", "La courte distance"], ans: 1 },
-            { q: "Le modèle de communication inclut :", options: ["Emetteur, Message, Récepteur", "Budget, Coût, Qualité", "WBS, PBS, OBS", "Plan, Faire, Vérifier"], ans: 0 },
-            { q: "Qu'est-ce que la communication formelle ?", options: ["Un message codé", "Rapports, plans, réunions", "Des potins", "Des SMS"], ans: 1 },
-            { q: "Qu'est-ce que la communication informelle ?", options: ["Une lettre officielle", "Des discussions à la machine à café", "Un contrat", "Une présentation"], ans: 1 },
-            { q: "Le nombre de canaux augmente :", options: ["Linéairement", "Exponentiellement", "Ne change pas", "Diminue"], ans: 1 },
-            { q: "10 parties prenantes donnent combien de canaux ?", options: ["10", "45", "90", "20"], ans: 1 },
-            { q: "Le feedback est :", options: ["Le message reçu", "La réponse du récepteur", "L'envoi", "Le bruit"], ans: 1 },
-            { q: "Qu'est-ce que l'encodage ?", options: ["Traduire la pensée en message", "Chiffrer", "Fermer un fichier", "Envoyer un email"], ans: 0 },
-            { q: "Qu'est-ce que le décodage ?", options: ["Traduire le message en pensée", "Ouvrir un fichier", "Recevoir", "Lire"], ans: 0 },
-            { q: "L'intranet est un exemple de :", options: ["Push", "Pull", "Interactive", "Verbal"], ans: 1 },
-            { q: "La gestion des communications est :", options: ["Parler seulement", "Garantir le besoin d'info est satisfait", "Envoyer des spams", "Ignorer les emails"], ans: 1 },
-            { q: "Le plan de communication inclut :", options: ["Qui, quoi, quand, comment", "Uniquement le budget", "Uniquement le logo", "Rien"], ans: 0 },
-            { q: "Qu'est-ce qu'un rapport d'état ?", options: ["Une blague", "Description de la situation actuelle", "Une facture", "Une lettre de licenciement"], ans: 1 },
-            { q: "La langue est un facteur de communication :", options: ["Important si différents", "Inutile", "Négatif", "Magique"], ans: 0 },
-            { q: "La culture est un facteur de communication :", options: ["Invisible", "Influant le style et l'interprétation", "Négatif", "Faux"], ans: 1 },
-            { q: "La distance physique peut :", options: ["Aider la communication", "Créer des barrières (différents fuseaux)", "Aucun effet", "Rendre tout parfait"], ans: 1 },
-            { q: "La terminologie technique est :", options: ["Toujours comprise", "Un bruit si les autres ne connaissent pas", "Idéale", "Obligatoire"], ans: 1 },
-            { q: "L'écoute active est :", options: ["Entendre seulement", "Écouter et comprendre", "Parler fort", "Dormir"], ans: 1 },
-            { q: "Qu'est-ce qu'un rapport de prévision ?", options: ["Prédire l'avenir du projet", "Regarder le passé", "Une blague", "Un compte rendu"], ans: 0 },
-            { q: "Un rapport de variance montre :", options: ["Plan vs Réel", "Plan vs Rêve", "Réel vs Fiction", "Past vs Present"], ans: 0 },
-            { q: "Le 'Ping-pong' d'emails est :", options: ["Un sport", "Un signe de mauvaise communication", "Une bonne pratique", "Fun"], ans: 1 },
-            { q: "La communication non verbale inclut :", options: ["Les emails", "Les gestes, expressions", "Le téléphone", "Les PDF"], ans: 1 },
-            { q: "Qu'est-ce que la transparence ?", options: ["Rien cacher", "Tout cacher", "Mentir", "Ignorer"], ans: 0 },
-            { q: "Le mémo est une communication :", options: ["Interactive", "Formelle écrite (souvent push)", "Pull", "Gestuelle"], ans: 1 },
-            { q: "Le registre des parties prenantes est :", options: ["Une liste de course", "Un outil pour gérer les acteurs", "Un menu", "Une playlist"], ans: 1 },
-            { q: "Pourquoi évaluer les performances de communication ?", options: ["Pour savoir si tout le monde est content", "Pour juger l'équipe", "Pour le fun", "Pour rien"], ans: 0 },
-            { q: "La technologie de communication affecte :", options: ["L'humeur du chef", "L'efficacité de la transmission", "Le goût du café", "La couleur des murs"], ans: 1 },
-            { q: "La diffusion (distribut) de l'info inclut :", options: ["Mettre à disposition les parties prenantes", "Les faire payer", "Les enfermer", "Les détruire"], ans: 0 },
-            { q: "Une barrière psychologique peut être :", options: ["Un mur", "La peur de parler en public", "L'argent", "La vitesse de la lumière"], ans: 1 },
-            { q: "Qu'est-ce qu'un conflit de communication ?", options: ["Une guerre", "Un désaccord sur le message", "Un accord", "Un baiser"], ans: 1 },
-            { q: "L'objectif final de la communication est :", options: ["Bavarder", "Le succès du projet via une bonne information", "Faire de la politique", "Remplir des boites mail"], ans: 1 }
+            { q: "Combien de canaux pour 4 parties prenantes ?", options: ["4", "6", "8", "12"], ans: 1, diff: "hard" },
+            { q: "Quel est le mode 'Push' ?", options: ["Site Intranet", "Lettre recommandée", "Réunion", "Discussion informelle"], ans: 1, diff: "hard" },
+            { q: "Qu'est-ce que le 'Bruit' en communication ?", options: ["Un son fort", "Une barrière à la transmission", "Un logiciel", "Une réponse"], ans: 1, diff: "hard" },
+            { q: "Une réunion est un exemple de communication :", options: ["Pull", "Push", "Interactive", "Non verbale"], ans: 2, diff: "medium" },
+            { q: "L'e-mail est généralement une communication :", options: ["Interactive", "Push (parfois réponses interactives)", "Pull", "Visuelle uniquement"], ans: 1, diff: "hard" },
+            { q: "Le chef de projet passe environ combien de temps à communiquer ?", options: ["10%", "50%", "90%", "100%"], ans: 2, diff: "medium" },
+            { q: "Qu'est-ce qui peut bloquer la communication ?", options: ["La clarté", "L'hostilité", "Le bon vocabulaire", "La courte distance"], ans: 1, diff: "hard" },
+            { q: "Le modèle de communication inclut :", options: ["Emetteur, Message, Récepteur", "Budget, Coût, Qualité", "WBS, PBS, OBS", "Plan, Faire, Vérifier"], ans: 0, diff: "hard" },
+            { q: "Qu'est-ce que la communication formelle ?", options: ["Un message codé", "Rapports, plans, réunions", "Des potins", "Des SMS"], ans: 1, diff: "medium" },
+            { q: "Qu'est-ce que la communication informelle ?", options: ["Une lettre officielle", "Des discussions à la machine à café", "Un contrat", "Une présentation"], ans: 1, diff: "medium" },
+            { q: "Le nombre de canaux augmente :", options: ["Linéairement", "Exponentiellement", "Ne change pas", "Diminue"], ans: 1, diff: "hard" },
+            { q: "10 parties prenantes donnent combien de canaux ?", options: ["10", "45", "90", "20"], ans: 1, diff: "hard" },
+            { q: "Le feedback est :", options: ["Le message reçu", "La réponse du récepteur", "L'envoi", "Le bruit"], ans: 1, diff: "medium" },
+            { q: "Qu'est-ce que l'encodage ?", options: ["Traduire la pensée en message", "Chiffrer", "Fermer un fichier", "Envoyer un email"], ans: 0, diff: "hard" },
+            { q: "Qu'est-ce que le décodage ?", options: ["Traduire le message en pensée", "Ouvrir un fichier", "Recevoir", "Lire"], ans: 0, diff: "hard" },
+            { q: "L'intranet est un exemple de :", options: ["Push", "Pull", "Interactive", "Verbal"], ans: 1, diff: "hard" },
+            { q: "La gestion des communications est :", options: ["Parler seulement", "Garantir le besoin d'info est satisfait", "Envoyer des spams", "Ignorer les emails"], ans: 1, diff: "hard" },
+            { q: "Le plan de communication inclut :", options: ["Qui, quoi, quand, comment", "Uniquement le budget", "Uniquement le logo", "Rien"], ans: 0, diff: "medium" },
+            { q: "Qu'est-ce qu'un rapport d'état ?", options: ["Une blague", "Description de la situation actuelle", "Une facture", "Une lettre de licenciement"], ans: 1, diff: "hard" },
+            { q: "La langue est un facteur de communication :", options: ["Important si différents", "Inutile", "Négatif", "Magique"], ans: 0, diff: "medium" },
+            { q: "La culture est un facteur de communication :", options: ["Invisible", "Influant le style et l'interprétation", "Négatif", "Faux"], ans: 1, diff: "hard" },
+            { q: "La distance physique peut :", options: ["Aider la communication", "Créer des barrières (différents fuseaux)", "Aucun effet", "Rendre tout parfait"], ans: 1, diff: "hard" },
+            { q: "La terminologie technique est :", options: ["Toujours comprise", "Un bruit si les autres ne connaissent pas", "Idéale", "Obligatoire"], ans: 1, diff: "hard" },
+            { q: "L'écoute active est :", options: ["Entendre seulement", "Écouter et comprendre", "Parler fort", "Dormir"], ans: 1, diff: "hard" },
+            { q: "Qu'est-ce qu'un rapport de prévision ?", options: ["Prédire l'avenir du projet", "Regarder le passé", "Une blague", "Un compte rendu"], ans: 0, diff: "hard" },
+            { q: "Un rapport de variance montre :", options: ["Plan vs Réel", "Plan vs Rêve", "Réel vs Fiction", "Past vs Present"], ans: 0, diff: "hard" },
+            { q: "Le 'Ping-pong' d'emails est :", options: ["Un sport", "Un signe de mauvaise communication", "Une bonne pratique", "Fun"], ans: 1, diff: "hard" },
+            { q: "La communication non verbale inclut :", options: ["Les emails", "Les gestes, expressions", "Le téléphone", "Les PDF"], ans: 1, diff: "medium" },
+            { q: "Qu'est-ce que la transparence ?", options: ["Rien cacher", "Tout cacher", "Mentir", "Ignorer"], ans: 0, diff: "medium" },
+            { q: "Le mémo est une communication :", options: ["Interactive", "Formelle écrite (souvent push)", "Pull", "Gestuelle"], ans: 1, diff: "hard" },
+            { q: "Le registre des parties prenantes est :", options: ["Une liste de course", "Un outil pour gérer les acteurs", "Un menu", "Une playlist"], ans: 1, diff: "hard" },
+            { q: "Pourquoi évaluer les performances de communication ?", options: ["Pour savoir si tout le monde est content", "Pour juger l'équipe", "Pour le fun", "Pour rien"], ans: 0, diff: "hard" },
+            { q: "La technologie de communication affecte :", options: ["L'humeur du chef", "L'efficacité de la transmission", "Le goût du café", "La couleur des murs"], ans: 1, diff: "medium" },
+            { q: "La diffusion (distribut) de l'info inclut :", options: ["Mettre à disposition les parties prenantes", "Les faire payer", "Les enfermer", "Les détruire"], ans: 0, diff: "hard" },
+            { q: "Une barrière psychologique peut être :", options: ["Un mur", "La peur de parler en public", "L'argent", "La vitesse de la lumière"], ans: 1, diff: "hard" },
+            { q: "Qu'est-ce qu'un conflit de communication ?", options: ["Une guerre", "Un désaccord sur le message", "Un accord", "Un baiser"], ans: 1, diff: "hard" },
+            { q: "L'objectif final de la communication est :", options: ["Bavarder", "Le succès du projet via une bonne information", "Faire de la politique", "Remplir des boites mail"], ans: 1, diff: "medium" }
+        ]
+    },
+    6: {
+        title: "Quiz de Classe: Chapitres 1-3",
+        summary: "Exercices sur PMBOK, Processus, et Périmètre.",
+        concepts: [{ title: "PMBOK", desc: "Project Management Body of Knowledge" }],
+        questions: [
+            { q: "Qu’est-ce qu’un projet selon le PMBOK ?", options: ["Un travail répétitif", "Une entreprise temporaire pour créer un produit unique", "Un processus continu", "Une tâche simple et permanente"], ans: 1, diff: "easy" },
+            { q: "Quelle est la caractéristique essentielle d’un produit issu d’un projet ?", options: ["Il est temporaire", "Il est un livrable unique", "Il est réutilisable", "Il est immatériel"], ans: 1, diff: "easy" },
+            { q: "Parmi les caractéristiques suivantes, laquelle n’appartient pas à un projet ?", options: ["Temporaire", "Livrable unique", "Elaboration progressive", "Cycle infini"], ans: 3, diff: "easy" },
+            { q: "Quel est le triple objectif ou contrainte dans le management de projet ?", options: ["Qualité, équipe, délai", "Délai, coût, contenu", "Budget, plan, risque", "Communication, parties prenantes, équipe"], ans: 1, diff: "easy" },
+            { q: "Combien de groupes de processus de management de projet selon le PMBOK ?", options: ["3", "4", "5", "6"], ans: 2, diff: "easy" },
+            { q: "Lequel des groupes de processus vient après la planification ?", options: ["Démarrage", "Clôture", "Exécution", "Surveillance et maîtrise"], ans: 2, diff: "medium" },
+            { q: "Quel est le rôle principal de la charte du projet ?", options: ["Programmer les tâches de l’équipe", "Autoriser formellement le projet et le chef de projet", "Evaluer les coûts", "Définir les risques"], ans: 1, diff: "medium" },
+            { q: "Un plan de management du projet décrit principalement :", options: ["Les ressources humaines uniquement", "Comment le projet sera exécuté, contrôlé et fermé", "Les fournisseurs externes", "Les outils logiciels utilisés"], ans: 1, diff: "medium" },
+            { q: "Dans la gestion de l’intégration de projet, la maîtrise des changements concerne :", options: ["L’approbation des modifications et la documentation des impacts", "La gestion exclusive des coûts", "L’arrêt immédiat du projet en cas de changement", "La performance de l’équipe uniquement"], ans: 0, diff: "hard" },
+            { q: "Quel processus vise à confirmer formellement l’achèvement des livrables ?", options: ["Recueillir les exigences", "Valider le contenu", "Clôturer la phase", "Planifier la qualité"], ans: 1, diff: "medium" },
+            { q: "La structure de découpage du projet (WBS) sert à :", options: ["Organiser les ressources humaines", "Diviser le travail et les livrables en éléments plus petits et contrôlables", "Planifier les coûts", "Définir le budget uniquement"], ans: 1, diff: "medium" },
+            { q: "Dans le contexte d’un projet, une partie prenante est :", options: ["Un fournisseur externe uniquement", "Toute personne ou organisation impliquée ou affectée par le projet", "Un membre de l’équipe projet uniquement", "Un concurrent de l’entreprise"], ans: 1, diff: "easy" },
+            { q: "Parmi ces méthodes, laquelle est une approche de gestion de projet Agile ?", options: ["PRINCE2", "Scrum", "Waterfall", "Critical Path Method"], ans: 1, diff: "easy" },
+            { q: "Le management des connaissances dans un projet consiste à :", options: ["Acquérir et utiliser les connaissances pour atteindre les objectifs", "Se concentrer uniquement sur les documents", "Limiter l’apprentissage pour éviter les conflits", "Éviter de former les équipes"], ans: 0, diff: "medium" },
+            { q: "L’évaluation des performances réelles du projet face au plan fait partie du processus de :", options: ["Démarrage", "Planification", "Maîtrise du projet", "Clôture"], ans: 2, diff: "medium" },
+            { q: "Quelles sont les trois dimensions principales contrôlées dans le management de projet ?", options: ["Coût, délai, qualité", "Ressources, communication, risques", "Délai, coût, contenu", "Risques, parties prenantes, approvisionnement"], ans: 2, diff: "medium" },
+            { q: "Lequel des outils suivants est utilisé pour la planification et la structuration des tâches dans un projet ?", options: ["SWOT", "Diagramme de Gantt", "PESTEL", "Analyse de sensibilité"], ans: 1, diff: "easy" },
+            { q: "Quelle est la différence majeure entre cycle de vie du produit et cycle de vie du projet ?", options: ["Le produit est temporaire, le projet non", "Le projet a un début et une fin, le produit a une durée de vie jusqu’à fin d’utilisation", "Le produit est planifié, le projet non", "Il n’y a aucune différence"], ans: 1, diff: "hard" },
+            { q: "Pourquoi le management de projet est-il nécessaire ?", options: ["Pour gérer uniquement les coûts", "Pour organiser des activités non récurrentes de manière coordonnée et efficace", "Pour remplacer la direction générale", "Pour externaliser les responsabilités"], ans: 1, diff: "medium" },
+            { q: "Dans un projet, qu’implique l’élaboration progressive ?", options: ["Détails définis dès le début", "Définition progressive des objectifs et livrables au fur et à mesure de l’avancement", "Absence de planning", "Décisions prises uniquement à la fin"], ans: 1, diff: "medium" }
+        ]
+    },
+    7: {
+        title: "Quiz de Classe: Délais & Coûts (Ch 4-5)",
+        summary: "Estimation, Gantt, Budget et Value Management.",
+        concepts: [{ title: "Budget", desc: "Référence de base." }],
+        questions: [
+            { q: "Quel est le rôle principal du plan de gestion de l'échéancier ?", options: ["Définir les coûts du projet", "Établir les critères pour développer, suivre et maîtriser l'échéancier", "Gérer les ressources humaines", "Analyser les risques uniquement"], ans: 1, diff: "medium" },
+            { q: "Que représente un jalon dans un projet ?", options: ["Une activité complète", "Un point ou événement significatif", "Un budget alloué", "Une marge de retard"], ans: 1, diff: "easy" },
+            { q: "Quelle est la différence entre 'durée' et 'effort' dans les estimations d'activités ?", options: ["La durée est le temps calendrier, l'effort est les unités de travail", "Les deux sont identiques", "L'effort inclut seulement les coûts", "La durée concerne les jalons"], ans: 0, diff: "medium" },
+            { q: "Quel diagramme présente les activités sur l'axe des ordonnées et les dates sur l'axe des abscisses avec des barres horizontales ?", options: ["Diagramme de jalons", "Diagramme de Gantt", "Diagramme de réseau", "Courbe en S"], ans: 1, diff: "easy" },
+            { q: "Le chemin critique est :", options: ["La séquence d'activités la plus courte", "La séquence d'activités représentant le chemin le plus long, déterminant la durée minimale du projet", "Une marge totale", "Un jalon final"], ans: 1, diff: "hard" },
+            { q: "Que mesure la marge d'une activité ?", options: ["Le temps maximum de retard sans impacter la fin du projet", "Le coût supplémentaire", "La durée exacte", "Les ressources allouées"], ans: 0, diff: "medium" },
+            { q: "Quel outil utilise des icônes pour une vue synthétique des jalons, utile pour les cadres supérieurs ?", options: ["Diagramme de Gantt", "Diagramme de jalons", "WBS", "Budget échelonné"], ans: 1, diff: "easy" },
+            { q: "Les données historiques servent à :", options: ["Évaluer le temps nécessaire au stade initial", "Calculer les coûts indirects", "Définir les provisions pour aléas", "Gérer les changements"], ans: 0, diff: "medium" },
+            { q: "Dans une approche Agile, comment évaluer l'avancement ?", options: ["Par des démonstrations de Sprint et revues", "Seulement par le budget", "Via le registre des risques", "Par benchmarking externe"], ans: 0, diff: "medium" },
+            { q: "Un lot de travaux est :", options: ["Le niveau le plus bas du WBS", "Une tâche logicielle", "Un jalon", "Une provision"], ans: 0, diff: "medium" },
+            { q: "Les estimations de coûts incluent :", options: ["Main-d'œuvre directe, matériaux, équipements et réserves pour aléas", "Seulement les coûts indirects", "Les jalons uniquement", "Les marges de délai"], ans: 0, diff: "medium" },
+            { q: "Quelle technique d'estimation garantit qu'aucun travail n'est omis mais peut être difficile à répartir ?", options: ["Estimation par analogie", "Estimation ascendante (Bottom-up)", "Estimation paramétrique", "Bottom-up"], ans: 1, diff: "hard" },
+            { q: "La référence de base des coûts est :", options: ["La version approuvée du budget échelonné, excluant les réserves pour imprévus", "Le total des provisions", "Un diagramme de Gantt", "Le chemin critique"], ans: 0, diff: "hard" },
+            { q: "Pour établir la référence de base, on utilise :", options: ["WBS, échéancier, estimations de coûts et plan des risques", "Seulement les leçons apprises", "Les diagrammes de jalons", "Les marges totales"], ans: 0, diff: "medium" },
+            { q: "Les défis budgétaires incluent :", options: ["Ajout d'exigences, nouveaux risques, changements économiques", "Retards de jalons uniquement", "Efforts d'activités", "Données historiques"], ans: 0, diff: "medium" },
+            { q: "L'estimation ascendante est :", options: ["Très précise mais prend du temps, une fois WBS défini", "Rapide et inexacte", "Basée sur analogies", "Pour les cadres supérieurs"], ans: 0, diff: "medium" },
+            { q: "Les registres des leçons apprises aident à :", options: ["L'estimation des coûts en termes de réussites et échecs", "La planification des délais", "Les diagrammes de réseau", "Les provisions pour imprévus"], ans: 0, diff: "medium" },
+            { q: "Le budget échelonné permet de :", options: ["Suivre et mesurer la performance des coûts", "Calculer les marges", "Définir les jalons", "Gérer les activités"], ans: 0, diff: "hard" },
+            { q: "Pour anticiper les contraintes budgétaires :", options: ["Maintenir le registre des parties prenantes et maîtriser les risques", "Ignorer les fournisseurs", "Changer l'échéancier seulement", "Ajouter des jalons"], ans: 0, diff: "hard" },
+            { q: "Les composants du budget incluent :", options: ["Estimations des coûts des activités, provisions pour aléas et référence de base", "Seulement les coûts indirects", "Diagrammes de Gantt", "Marges de chemin critique"], ans: 0, diff: "medium" }
         ]
     }
 };
 
-// Load scores from LocalStorage on Init
 const savedScores = JSON.parse(localStorage.getItem('pmiScores'));
 const appState = { 
-    scores: savedScores || { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 }, 
-    mastery: { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 }, 
+    scores: savedScores || { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0, 7: 0 }, 
+    mastery: { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0, 7: 0 }, 
     currentView: 'dashboard' 
 };
 
-// Helper to save state
 function saveState() {
     localStorage.setItem('pmiScores', JSON.stringify(appState.scores));
 }
+
+function renderOptions(container, question, onClickCallback, selectedIdx = null) {
+    container.innerHTML = '';
+    question.options.forEach((opt, idx) => {
+        const btn = document.createElement('button');
+        btn.className = 'option-btn';
+        btn.textContent = opt;
+        if (selectedIdx === idx) btn.classList.add('selected');
+        btn.onclick = () => onClickCallback(idx, btn);
+        container.appendChild(btn);
+    });
+}
+
+// --- OPENING SCREEN LOGIC ---
+window.addEventListener('load', () => {
+    const openingScreen = document.getElementById('opening-screen');
+    setTimeout(() => {
+        openingScreen.style.opacity = '0';
+        setTimeout(() => {
+            openingScreen.style.display = 'none';
+        }, 800); // Wait for fade transition
+    }, 1500); // 1.5 Seconds charging
+});
 
 const router = {
     navigate: (viewId, chapterId = null) => {
         document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
         if (viewId === 'dashboard') document.getElementById('nav-dashboard').classList.add('active');
-        if (viewId === 'review') document.getElementById('nav-review').classList.add('active');
+        
         if (viewId === 'chapter' && chapterId) document.getElementById(`nav-ch${chapterId}`).classList.add('active');
 
         document.querySelectorAll('.view').forEach(v => {
@@ -691,7 +730,7 @@ const router = {
             setTimeout(() => { if(!v.classList.contains('active')) v.classList.add('hidden'); }, 400);
         });
 
-        const target = document.getElementById(viewId === 'chapter' ? 'view-chapter' : (viewId === 'quiz' ? 'view-quiz' : (viewId === 'results' ? 'view-results' : (viewId === 'review' ? 'view-review' : 'view-dashboard'))));
+        const target = document.getElementById(viewId === 'chapter' ? 'view-chapter' : (viewId === 'quiz' ? 'view-quiz' : (viewId === 'results' ? 'view-results' : 'view-dashboard')));
         if (target) {
             target.classList.remove('hidden');
             setTimeout(() => target.classList.add('active'), 50);
@@ -710,14 +749,15 @@ const router = {
 const dashboardController = {
     render: () => {
         let totalMastery = 0;
-        for (let i = 1; i <= 5; i++) {
+        for (let i = 1; i <= 7; i++) {
             const score = appState.scores[i];
-            const percent = score > 0 ? Math.round((score / 35) * 100) : 0;
+            const totalQ = rawCourseData[i].questions.length;
+            const percent = score > 0 ? Math.round((score / totalQ) * 100) : 0;
             appState.mastery[i] = percent; totalMastery += percent;
             const circle = document.getElementById(`prog-ch${i}`);
             if (circle) circle.textContent = `${percent}%`;
         }
-        const global = Math.round(totalMastery / 5);
+        const global = Math.round(totalMastery / 7);
         const masteryEl = document.getElementById('global-mastery');
         masteryEl.textContent = `${global}%`;
         masteryEl.style.color = (global < 50) ? 'var(--error-neon)' : (global < 80 ? 'var(--primary-neon)' : 'var(--success-neon)');
@@ -728,42 +768,129 @@ const chapterController = {
     load: (id) => {
         chapterController.currentChapter = id;
         const data = rawCourseData[id];
-        document.getElementById('ch-title').textContent = `Chapitre 0${id}: ${data.title}`;
-        document.getElementById('ch-summary').innerHTML = `<p>${data.summary}</p>`;
+        document.getElementById('ch-title').textContent = data.title;
+        
+        const summaryEl = document.getElementById('ch-summary');
+        summaryEl.textContent = data.summary;
+        
         const conceptContainer = document.getElementById('ch-concepts');
         conceptContainer.innerHTML = '';
         data.concepts.forEach(c => {
             const div = document.createElement('div');
             div.className = 'concept-card';
-            div.innerHTML = `<div class="concept-title">${c.title}</div><div class="concept-desc">${c.desc}</div>`;
+            div.innerHTML = `<div class="concept-title">${c.title}</div><div class="concept-desc">${c.desc}</div>`; 
             conceptContainer.appendChild(div);
         });
+
+        // Adjust Button Text based on chapter type
+        const btnStart = document.getElementById('btn-start-quiz');
+        const infoTitle = document.getElementById('quiz-info-title');
+        const infoDesc = document.getElementById('quiz-info-desc');
+
+        if (id <= 5) {
+            infoTitle.textContent = "Examen Intermédiaire";
+            infoDesc.textContent = "36 Questions (80% Difficile, 20% Moyen). Durée: 10 min.";
+            btnStart.textContent = "Lancer l'Examen";
+            btnStart.style.borderColor = "var(--secondary-neon)";
+            btnStart.style.color = "var(--secondary-neon)";
+        } else {
+            infoTitle.textContent = "Quiz de Classe";
+            infoDesc.textContent = "Révision rapide du chapitre.";
+            btnStart.textContent = "Lancer le Quiz";
+            btnStart.style.borderColor = "var(--primary-neon)";
+            btnStart.style.color = "var(--primary-neon)";
+        }
     }
 };
 
 const quizEngine = {
-    questions: [], currentIdx: 0, score: 0,
+    questions: [], currentIdx: 0, score: 0, timerInterval: null, timeLeft: null,
     startQuiz: () => {
-        const bank = rawCourseData[chapterController.currentChapter].questions; 
-        quizEngine.questions = bank; quizEngine.currentIdx = 0; quizEngine.score = 0;
+        const currentCh = chapterController.currentChapter;
+        const bank = rawCourseData[currentCh].questions; 
+        quizEngine.currentIdx = 0; quizEngine.score = 0;
+        
+        if (currentCh <= 5) {
+            // --- EXAM LOGIC FOR 1-5 (10 Min Timer, 80% Hard, 20% Medium) ---
+            
+            // 1. Filter Hard & Medium
+            const hardQ = bank.filter(q => q.diff === 'hard');
+            const medQ = bank.filter(q => q.diff === 'medium');
+
+            // 2. Helper to fetch from other chapters if local pool is empty
+            const getAllOtherQuestions = (diffType) => {
+                let pool = [];
+                for(let i=1; i<=5; i++) {
+                    if(i !== currentCh) pool = pool.concat(rawCourseData[i].questions.filter(q => q.diff === diffType));
+                }
+                return pool;
+            };
+
+            // 3. Calculate Counts: 36 Total
+            const targetCount = 36;
+            const hardCount = Math.floor(targetCount * 0.80); // 28.8 -> 28
+            const mediumCount = targetCount - hardCount; // 8
+            
+            // 4. Prepare Hard Pool (Need 28)
+            let selectedHard = shuffleArray([...hardQ]);
+            if (selectedHard.length < hardCount) {
+                const otherHard = getAllOtherQuestions('hard');
+                // Filter out duplicates
+                const ids = selectedHard.map(q => q.q); 
+                const otherHardUnique = otherHard.filter(q => !ids.includes(q.q));
+                selectedHard = selectedHard.concat(shuffleArray(otherHardUnique).slice(0, hardCount - selectedHard.length));
+            }
+            selectedHard = selectedHard.slice(0, hardCount);
+
+            // 5. Prepare Medium Pool (Need 8)
+            let selectedMed = shuffleArray([...medQ]);
+            if (selectedMed.length < mediumCount) {
+                const otherMed = getAllOtherQuestions('medium');
+                const ids = selectedMed.map(q => q.q);
+                const otherMedUnique = otherMed.filter(q => !ids.includes(q.q));
+                selectedMed = selectedMed.concat(shuffleArray(otherMedUnique).slice(0, mediumCount - selectedMed.length));
+            }
+            selectedMed = selectedMed.slice(0, mediumCount);
+
+            // 6. Merge & Shuffle
+            let finalSet = [...selectedHard, ...selectedMed];
+            quizEngine.questions = shuffleArray(finalSet);
+            
+            // 7. Timer Setup (10 mins = 600s)
+            quizEngine.timeLeft = 600;
+            quizEngine.isExam = true;
+
+        } else {
+            // --- STANDARD QUIZ LOGIC FOR CHAPTERS 6-7 ---
+            quizEngine.questions = bank; // Take all questions
+            quizEngine.timeLeft = null;
+            quizEngine.isExam = false;
+        }
+        
         router.navigate('quiz');
         quizEngine.renderQuestion();
+        
+        if (quizEngine.isExam) {
+            quizEngine.startTimer();
+            document.getElementById('quiz-timer-text').classList.remove('hidden');
+        } else {
+            document.getElementById('quiz-timer-text').classList.add('hidden');
+        }
     },
     renderQuestion: () => {
         const q = quizEngine.questions[quizEngine.currentIdx];
-        document.getElementById('quiz-progress-q').textContent = `Question ${quizEngine.currentIdx + 1}/35`;
+        const total = quizEngine.questions.length;
+        document.getElementById('quiz-progress-q').textContent = `Question ${quizEngine.currentIdx + 1}/${total}`;
         document.getElementById('quiz-current-score').textContent = quizEngine.score;
         document.getElementById('quiz-question').textContent = q.q;
+        
         const optsContainer = document.getElementById('quiz-options');
-        optsContainer.innerHTML = ''; document.getElementById('quiz-feedback').classList.add('hidden');
-        q.options.forEach((opt, idx) => {
-            const btn = document.createElement('button');
-            btn.className = 'option-btn'; btn.textContent = opt;
-            btn.onclick = () => quizEngine.handleAnswer(idx, btn);
-            optsContainer.appendChild(btn);
-        });
+        document.getElementById('quiz-feedback').classList.add('hidden');
+        
+        renderOptions(optsContainer, q, (idx, btn) => quizEngine.handleAnswer(idx, btn));
+        
         document.getElementById('quiz-timer').style.width = '0%';
-        setTimeout(() => document.getElementById('quiz-timer').style.width = '100%', 100);
+        if(!quizEngine.isExam) setTimeout(() => document.getElementById('quiz-timer').style.width = '100%', 100);
     },
     handleAnswer: (selectedIdx, btnElement) => {
         const allBtns = document.querySelectorAll('#quiz-options .option-btn');
@@ -779,54 +906,100 @@ const quizEngine = {
         quizEngine.currentIdx++;
         if (quizEngine.currentIdx < quizEngine.questions.length) { quizEngine.renderQuestion(); } else { quizEngine.finish(); }
     },
+    startTimer: () => {
+        if(quizEngine.timerInterval) clearInterval(quizEngine.timerInterval);
+        const timerEl = document.getElementById('quiz-timer-text');
+        
+        quizEngine.timerInterval = setInterval(() => {
+            quizEngine.timeLeft--;
+            const m = Math.floor(quizEngine.timeLeft / 60).toString().padStart(2, '0');
+            const s = (quizEngine.timeLeft % 60).toString().padStart(2, '0');
+            timerEl.textContent = `${m}:${s}`;
+            
+            timerEl.classList.remove('timer-warning', 'timer-critical');
+            if (quizEngine.timeLeft <= 60 && quizEngine.timeLeft > 30) { 
+                 timerEl.classList.add('timer-warning');
+            } else if (quizEngine.timeLeft <= 30) { 
+                 timerEl.classList.add('timer-critical');
+            }
+
+            if(quizEngine.timeLeft <= 0) quizEngine.finish();
+        }, 1000);
+    },
     finish: () => {
+        if(quizEngine.timerInterval) clearInterval(quizEngine.timerInterval);
+        
         appState.scores[chapterController.currentChapter] = quizEngine.score;
-        saveState(); // Persist data
+        saveState();
         document.getElementById('view-quiz').classList.remove('active');
         setTimeout(() => {
             document.getElementById('view-quiz').classList.add('hidden');
             document.getElementById('view-results').classList.remove('hidden');
             setTimeout(() => document.getElementById('view-results').classList.add('active'), 50);
         }, 400);
-        resultsController.show(quizEngine.score, 35, 'Chapitre');
+        const total = quizEngine.questions.length;
+        resultsController.show(quizEngine.score, total, quizEngine.isExam ? 'Examen' : 'Quiz');
     }
 };
 
 const examEngine = {
-    questions: [], currentIdx: 0, answers: [], timerInterval: null, timeLeft: 5400,
+    questions: [], currentIdx: 0, answers: [], timerInterval: null, timeLeft: 3000, // 50 mins = 3000s
     init: () => {
         let allQ = [];
-        for(let i=1; i<=5; i++) allQ = allQ.concat(rawCourseData[i].questions);
-        examEngine.questions = allQ.sort(() => 0.5 - Math.random()).slice(0, 100);
-        examEngine.currentIdx = 0; examEngine.answers = new Array(100).fill(null); examEngine.timeLeft = 5400;
+        for(let i=1; i<=7; i++) allQ = allQ.concat(rawCourseData[i].questions);
+        
+        // DIFFICULTY DISTRIBUTION LOGIC (Exam Final - 100 Questions: 20 Easy, 30 Med, 50 Hard)
+        const easyQ = allQ.filter(q => q.diff === 'easy');
+        const mediumQ = allQ.filter(q => q.diff === 'medium');
+        const hardQ = allQ.filter(q => q.diff === 'hard');
+        
+        const shuffledEasy = shuffleArray([...easyQ]);
+        const shuffledMedium = shuffleArray([...mediumQ]);
+        const shuffledHard = shuffleArray([...hardQ]);
+        
+        const selectedEasy = shuffledEasy.slice(0, 20);
+        const selectedMedium = shuffledMedium.slice(0, 30);
+        const selectedHard = shuffledHard.slice(0, 50);
+        
+        let finalExam = [...selectedEasy, ...selectedMedium, ...selectedHard];
+        examEngine.questions = shuffleArray(finalExam);
+        
+        examEngine.currentIdx = 0; examEngine.answers = new Array(100).fill(null); 
         examEngine.renderQuestion(); examEngine.startTimer();
     },
     renderQuestion: () => {
         const q = examEngine.questions[examEngine.currentIdx];
         document.getElementById('exam-q-num').textContent = examEngine.currentIdx + 1;
         document.getElementById('exam-question').textContent = q.q;
+        
         const optsContainer = document.getElementById('exam-options');
-        optsContainer.innerHTML = '';
-        q.options.forEach((opt, idx) => {
-            const btn = document.createElement('button');
-            btn.className = 'option-btn'; btn.textContent = opt;
-            if (examEngine.answers[examEngine.currentIdx] === idx) btn.classList.add('selected');
-            btn.onclick = () => {
-                document.querySelectorAll('#exam-options .option-btn').forEach(b => b.classList.remove('selected'));
-                btn.classList.add('selected'); examEngine.answers[examEngine.currentIdx] = idx;
-            };
-            optsContainer.appendChild(btn);
-        });
+        
+        renderOptions(optsContainer, q, (idx, btn) => {
+            document.querySelectorAll('#exam-options .option-btn').forEach(b => b.classList.remove('selected'));
+            btn.classList.add('selected'); 
+            examEngine.answers[examEngine.currentIdx] = idx;
+        }, examEngine.answers[examEngine.currentIdx]);
+        
         const btn = document.getElementById('exam-next-btn');
         btn.textContent = (examEngine.currentIdx === 99) ? "Terminer" : "Suivant";
     },
     startTimer: () => {
         if(examEngine.timerInterval) clearInterval(examEngine.timerInterval);
+        const timerEl = document.getElementById('exam-timer');
+        
         examEngine.timerInterval = setInterval(() => {
             examEngine.timeLeft--;
             const m = Math.floor(examEngine.timeLeft / 60).toString().padStart(2, '0');
             const s = (examEngine.timeLeft % 60).toString().padStart(2, '0');
-            document.getElementById('exam-timer').textContent = `${m}:${s}`;
+            timerEl.textContent = `${m}:${s}`;
+            
+            timerEl.classList.remove('timer-warning', 'timer-critical');
+            if (examEngine.timeLeft <= 300 && examEngine.timeLeft > 60) { 
+                 timerEl.classList.add('timer-warning');
+            } else if (examEngine.timeLeft <= 60) { 
+                 timerEl.classList.add('timer-critical');
+            }
+
             if(examEngine.timeLeft <= 0) examEngine.submit();
         }, 1000);
     },
@@ -834,7 +1007,13 @@ const examEngine = {
         if (examEngine.currentIdx === 99) { examEngine.submit(); return; }
         examEngine.currentIdx++; examEngine.renderQuestion();
     },
-    toggleNotes: () => { document.getElementById('exam-notes-panel').classList.toggle('active'); },
+    toggleNotes: () => { 
+        const panel = document.getElementById('exam-notes-panel');
+        const overlay = document.getElementById('exam-overlay');
+        
+        panel.classList.toggle('active');
+        overlay.classList.toggle('notes-open'); 
+    },
     submit: () => {
         clearInterval(examEngine.timerInterval);
         if(!confirm("Soumettre ?")) return;
