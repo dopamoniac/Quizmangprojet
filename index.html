@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>PMI: Cognitive Learning System Mobile</title>
+    <title>PMI: Cognitive Learning System Corrected</title>
     <style>
         /* --- CORE VARIABLES & THEME --- */
         :root {
@@ -102,9 +102,9 @@
         .view { display: none; opacity: 0; transform: translateY(10px); transition: opacity 0.4s ease, transform 0.4s ease; max-width: 1200px; margin: 0 auto; padding-bottom: 50px; padding-top: 20px; }
         .view.active { display: block; opacity:1; transform: translateY(0); }
 
-        h1, h2, h3 { font-weight: 300; letter-spacing:1px; }
-        h1 { font-size: 1.5rem; color: var(--primary-neon); text-transform: uppercase; margin-bottom:1rem; }
-        h2 { font-size: 1.2rem; color: var(--text-main); margin-bottom:1rem; border-bottom: 1px solid var(--border-color); padding-bottom: 0.5rem; }
+        h1, h2, h3 { font-weight: 300; letter-spacing: 1px; }
+        h1 { font-size: 1.5rem; color: var(--primary-neon); text-transform: uppercase; margin-bottom: 1rem; }
+        h2 { font-size: 1.2rem; color: var(--text-main); margin-bottom: 1rem; border-bottom: 1px solid var(--border-color); padding-bottom: 0.5rem; }
         p { line-height: 1.6; color: var(--text-muted); margin-bottom: 0.8rem; }
 
         /* --- DASHBOARD --- */
@@ -113,12 +113,12 @@
         .card::before { content: ''; position: absolute; top: 0; left: 0; width: 2px; height: 100%; background: var(--border-color); transition: background 0.3s; }
         .card:hover { border-color: var(--text-muted); transform: translateY(-2px); }
         .card:hover::before { background: var(--primary-neon); }
-        .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom:1rem; }
+        .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; }
         .card-number { font-family: var(--font-mono); color: var(--primary-neon); font-size: 0.8rem; }
         .progress-circle { width: 40px; height: 40px; border-radius: 50%; border: 2px solid var(--border-color); display: flex; align-items: center; justify-content: center; font-size: 0.7rem; font-family: var(--font-mono); }
 
         /* --- BUTTONS --- */
-        .btn-cta { margin-top:1rem; width: 100%; padding: 0.8rem; background: transparent; border: 1px solid var(--primary-neon); color: var(--primary-neon); text-transform: uppercase; letter-spacing: 1px; font-size: 0.75rem; cursor: pointer; transition: all 0.2s; }
+        .btn-cta { margin-top: 1rem; width: 100%; padding: 0.8rem; background: transparent; border: 1px solid var(--primary-neon); color: var(--primary-neon); text-transform: uppercase; letter-spacing: 1px; font-size: 0.75rem; cursor: pointer; transition: all 0.2s; }
         .btn-cta:hover { background: var(--primary-neon); color: #000; box-shadow: 0 0 15px rgba(0, 243, 255, 0.3); }
         .btn-nav { width: 200px; padding: 1rem; background: var(--bg-panel); border: 1px solid var(--primary-neon); color: var(--primary-neon); text-transform: uppercase; font-size: 0.9rem; cursor: pointer; margin-top: 2rem; }
         .btn-nav:hover { background: var(--primary-neon); color: #000; }
@@ -198,28 +198,29 @@
             /* Sidebar becomes Off-Canvas Drawer */
             aside {
                 position: fixed;
-                left: -100%; 
-                width: 85%; 
+                left: -100%; /* Hidden by default */
+                width: 85%; /* Full width minus small margin */
                 max-width: 300px;
                 height: 100vh;
                 top: 0;
-                background: var(--bg-deep); 
+                background: var(--bg-deep); /* Solid bg for drawer */
                 box-shadow: 5px 0 15px rgba(0,0,0,0.5);
-                z-index: 30; 
+                z-index: 30; /* Above overlay */
             }
-            aside.active { left: 0; }
+            
+            aside.active { left: 0; } /* Show sidebar */
 
             /* Show Mobile Header */
             .mobile-header { display: flex; height: 60px; }
             
             /* Adjust Main Content */
-            main { padding: 1rem; padding-top: 70px; }
+            main { padding: 1rem; padding-top: 70px; /* Space for mobile header */ }
 
             /* Adjust Grids */
             .dashboard-grid { grid-template-columns: 1fr; }
             .concept-grid { grid-template-columns: 1fr; }
             
-            /* Typography */
+            /* Typography Adjustments */
             h1 { font-size: 1.2rem; }
             h2 { font-size: 1.1rem; }
             .question-text { font-size: 1rem; min-height: auto; padding: 1rem 0; }
@@ -236,7 +237,7 @@
                 background: var(--bg-panel);
             }
             .exam-header .brand { width: 100%; margin-bottom: 10px; }
-            .exam-header div { width: 100%; display: flex; justify-content: space-between; align-items: center; margin-top: 5px;}
+            .exam-header div { width: 100%; display: flex; justify-content: space-between; align-items: center; margin-top: 5px; }
             .exam-timer { font-size: 1.5rem !important; color: var(--primary-neon); font-family: var(--font-mono); }
             
             .exam-body { padding: 1rem; padding-bottom: 100px; /* Space for footer */ }
@@ -267,9 +268,9 @@
             
             /* WBS */
             .wbs-wrapper { overflow-x: scroll; -webkit-overflow-scrolling: touch; }
-            .tree { min-width: 600px; } 
+            .tree { min-width: 600px; } /* Ensure tree doesn't squash too much */
 
-            .dev-credit { display: none; } 
+            .dev-credit { display: none; } /* Move to header or hide to save space */
         }
     </style>
 </head>
@@ -285,7 +286,7 @@
         <nav>
             <button id="nav-dashboard" class="active" onclick="router.navigate('dashboard'); toggleMobileMenu();">Tableau de bord</button>
             <button id="nav-review" onclick="router.navigate('review'); toggleMobileMenu();">📖 Révision Globale</button>
-            <div style="margin: 1rem 0 0.5rem 0.5rem; font-size:0.7rem; color:var(--text-muted); text-transform:uppercase;">Chapitres</div>
+            <div style="margin: 1rem 0 0.5rem 0.5rem; font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase;">Chapitres</div>
             <button id="nav-ch1" onclick="router.navigate('chapter', 1); toggleMobileMenu();">1. Notion de Projet</button>
             <button id="nav-ch2" onclick="router.navigate('chapter', 2); toggleMobileMenu();">2. Intégration</button>
             <button id="nav-ch3" onclick="router.navigate('chapter', 3); toggleMobileMenu();">3. Périmètre</button>
@@ -304,7 +305,7 @@
 
     <!-- MOBILE HEADER -->
     <div class="mobile-header">
-        <div class="brand" style="margin:0; font-size:0.9rem;"><span style="background:var(--primary-neon)"></span> ECUEF531</div>
+        <div class="brand" style="margin: 0; font-size: 0.9rem;"><span style="background: var(--primary-neon)"></span> ECUEF531</div>
         <div class="hamburger" onclick="toggleMobileMenu()">&#9776;</div>
     </div>
 
@@ -343,13 +344,14 @@
                 <h1>Révision Globale & Architecture</h1>
                 <p>Synthèse Cognitive du Cycle de Vie et Structure WBS</p>
             </header>
+
             <div class="review-container">
                 <div class="summary-box" style="margin-top: 2rem; border-left-color: var(--primary-neon);">
-                    <h3 style="color:var(--primary-neon)">Le Modèle Mental du Projet</h3>
+                    <h3 style="color: var(--primary-neon)">Le Modèle Mental du Projet</h3>
                     <p>Un projet n'est pas une liste de tâches, c'est un système temporaire visant à créer une valeur unique. La réussite repose sur l'équilibre dynamique entre <strong>Contenu</strong>, <strong>Délais</strong> et <strong>Coûts</strong>, piloté par une <strong>Intégration</strong> rigoureuse.</p>
                 </div>
                 <!-- ... (Review content kept same as previous for brevity) ... -->
-                <div style="padding: 2rem 0; text-align:center;">
+                <div style="padding: 2rem 0; text-align: center;">
                     <h2>Révision Complète</h2>
                     <p>Utilisez le Quiz par chapitre pour tester vos connaissances spécifiques.</p>
                 </div>
@@ -359,12 +361,12 @@
         <!-- CHAPTER VIEW -->
         <section id="view-chapter" class="view">
             <div style="margin-bottom: 2rem;">
-                <button onclick="router.navigate('dashboard')" style="background:none; border:none; color:var(--text-muted); cursor:pointer;">&larr; Retour</button>
+                <button onclick="router.navigate('dashboard')" style="background: none; border: none; color: var(--text-muted); cursor: pointer;">&larr; Retour</button>
             </div>
             <div class="chapter-header">
                 <h1 id="ch-title">Chapitre X</h1>
             </div>
-            <article class="summary-box"><h3 style="color:var(--secondary-neon)">Synthèse Cognitive</h3><div id="ch-summary"></div></article>
+            <article class="summary-box"><h3 style="color: var(--secondary-neon)">Synthèse Cognitive</h3><div id="ch-summary"></div></article>
             <div class="concept-grid" id="ch-concepts"></div>
             <div style="text-align: center; margin-top: 3rem;">
                 <h2>Évaluation Chapitre (35 Questions)</h2>
@@ -376,16 +378,16 @@
         <!-- QUIZ VIEW -->
         <section id="view-quiz" class="view">
             <div class="quiz-container">
-                <div style="display:flex; justify-content:space-between; color:var(--text-muted); font-family:var(--font-mono); font-size:0.8rem;">
+                <div style="display: flex; justify-content: space-between; color: var(--text-muted); font-family: var(--font-mono); font-size: 0.8rem;">
                     <span id="quiz-progress-q">Question 1/35</span>
-                    <span>Score: <span id="quiz-current-score" style="color:var(--primary-neon)">0</span></span>
+                    <span>Score: <span id="quiz-current-score" style="color: var(--primary-neon)">0</span></span>
                 </div>
                 <div class="timer-bar"><div class="timer-fill" id="quiz-timer"></div></div>
                 <div class="question-text" id="quiz-question">...</div>
                 <div class="options-grid" id="quiz-options"></div>
                 <div class="quiz-feedback hidden" id="quiz-feedback">
-                    <h4 id="feedback-title" style="margin-bottom:0.5rem"></h4>
-                    <button class="btn-nav" onclick="quizEngine.nextQuestion()" id="btn-next-quiz" style="width:auto; margin: 1rem auto;">Suivant</button>
+                    <h4 id="feedback-title" style="margin-bottom: 0.5rem"></h4>
+                    <button class="btn-nav" onclick="quizEngine.nextQuestion()" id="btn-next-quiz" style="width: auto; margin: 1rem auto;">Suivant</button>
                 </div>
             </div>
         </section>
@@ -393,41 +395,41 @@
         <!-- EXAM OVERLAY -->
         <div id="exam-overlay" class="exam-overlay hidden">
             <div class="exam-header">
-                <div class="brand" style="margin:0; font-size: 0.8rem; width:100%; display:block;">
-                    <span style="background:var(--secondary-neon)"></span> 
-                    <span style="font-size:0.9rem; display:block;">EXAMEN FINAL (100 Questions)</span>
+                <div class="brand" style="margin: 0; font-size: 0.8rem; width: 100%; display: block;">
+                    <span style="background: var(--secondary-neon)"></span> 
+                    <span style="font-size: 0.9rem; display: block;">EXAMEN FINAL (100 Questions)</span>
                 </div>
-                <div style="width:100%; display:flex; justify-content:space-between; align-items:center; margin-top:5px;">
+                <div style="width: 100%; display: flex; justify-content: space-between; align-items: center; margin-top: 5px;">
                     <div class="exam-timer" id="exam-timer">01:30:00</div>
-                    <button onclick="examEngine.toggleNotes()" class="btn-cta" style="width:auto; margin:0; font-size:0.8rem; padding: 5px 10px;">NOTES</button>
+                    <button onclick="examEngine.toggleNotes()" class="btn-cta" style="width: auto; margin: 0; font-size: 0.8rem; padding: 5px 10px;">NOTES</button>
                 </div>
-                <div style="width:100%; text-align:right; margin-top:5px;">
+                <div style="width: 100%; text-align: right; margin-top: 5px;">
                     <button onclick="location.reload()" class="btn-exit">Quitter</button>
                 </div>
             </div>
-            <div style="display:flex; flex:1; overflow:hidden; flex-direction:column; position:relative;">
+            <div style="display: flex; flex: 1; overflow: hidden; flex-direction: column; position: relative;">
                 <div class="exam-body">
                     <div class="exam-body-inner">
-                        <h2 style="color:var(--text-muted)">Question <span id="exam-q-num">1</span>/100</h2>
+                        <h2 style="color: var(--text-muted)">Question <span id="exam-q-num">1</span>/100</h2>
                         <div class="question-text" id="exam-question" style="font-size: 1.2rem; justify-content: flex-start; text-align: left;"></div>
                         <div class="options-grid" id="exam-options"></div>
                     </div>
                 </div>
                 <div class="notes-panel" id="exam-notes-panel">
                     <div class="close-notes" onclick="examEngine.toggleNotes()">FERMER [X]</div>
-                    <h4 style="margin-bottom:0.5rem; color:var(--primary-neon);">Notes personnelles</h4>
+                    <h4 style="margin-bottom: 0.5rem; color: var(--primary-neon);">Notes personnelles</h4>
                     <textarea placeholder="Tapez vos notes ici..."></textarea>
                 </div>
             </div>
             <div class="exam-footer">
-                <button class="btn-nav" id="exam-next-btn" onclick="examEngine.nextQuestion()" style="margin:0;">Suivant</button>
+                <button class="btn-nav" id="exam-next-btn" onclick="examEngine.nextQuestion()" style="margin: 0;">Suivant</button>
             </div>
         </div>
 
         <!-- RESULTS VIEW -->
         <section id="view-results" class="view">
             <div style="text-align: center; margin-top: 4rem;">
-                <h1 style="color:var(--text-main)">Résultat de l'Évaluation</h1>
+                <h1 style="color: var(--text-main)">Résultat de l'Évaluation</h1>
                 <div class="score-display" id="res-percentage">0%</div>
                 <div class="score-breakdown">
                     <div class="breakdown-item"><span>Correctes</span><strong class="green" id="res-correct">0</strong></div>
@@ -445,7 +447,7 @@
 
 <script>
 /* --- DATA & LOGIC --- */
-// 35 UNIQUE QUESTIONS PER CHAPTER
+// 35 UNIQUE QUESTIONS PER CHAPTER (MANUALLY CURATED FOR QUALITY)
 const rawCourseData = {
     1: {
         title: "La Notion de Projet",
@@ -457,7 +459,7 @@ const rawCourseData = {
             { q: "Qu'est-ce que l'élaboration progressive ?", options: ["Allonger le délai", "Définir progressivement le contenu", "Augmenter le budget", "Réduire l'équipe"], ans: 1 },
             { q: "Quel approche est recommandée pour un travail fortement incertain ?", options: ["Prédictive", "Hybride uniquement", "Agile/Adaptative", "En cascade"], ans: 2 },
             { q: "Un livrable peut-il durer des siècles ?", options: ["Non", "Oui (ex: Monument)", "Seulement si digital", "Oui, c'est le projet qui dure"], ans: 1 },
-            { q: "Dans l'approche Agile, le travail est divisé en :", options: ["Phases longues", "Itérations (Sprints)", "Jalons annuels", "Contrats fermes"], ans: 1 },
+            { q: "Dans l'approche Agile, le travail est divisé en :", options: ["Phases longues", "Itérations (Sprints)", "Jalons annuels", "Contrats fermés"], ans: 1 },
             { q: "Lequel n'est pas un principe de management de projet ?", options: ["Favoriser le changement", "Ignorer les parties prenantes", "Se concentrer sur la valeur", "Être un leader"], ans: 1 },
             { q: "Le projet est autorisé par :", options: ["L'équipe", "Un besoin/Idée/Obligation", "Le hasard", "Le logiciel"], ans: 1 },
             { q: "Qui définit l'objectif de valeur ?", options: ["Le chef de projet", "Le sponsor et l'entreprise", "L'équipe technique", "Le fournisseur"], ans: 1 },
@@ -504,7 +506,7 @@ const rawCourseData = {
             { q: "Le coût d'une modification est-il plus élevé en fin de projet ?", options: ["Non", "Oui, généralement", "C'est égal", "C'est moins cher"], ans: 1 },
             { q: "Qu'est-ce que la gestion des connaissances ?", options: ["Stocker des fichiers", "Utiliser connaissances existantes et acquérir nouvelles", "Former le sponsor", "Ignorer l'expérience passée"], ans: 1 },
             { q: "Diriger et gérer le travail consiste à :", options: ["Réunir", "Exécuter le travail défini dans le PMP", "Dormir", "Planifier à nouveau"], ans: 1 },
-            { q: "Qu'est-ce que l'anticipation des problèmes ?", options: ["Attendre qu'ils arrivent", "Traiter les problèmes avant qu'ils soient critiques", "Ignorer", "Panic"], ans: 1 },
+            { q: "Qu'est-ce que l'anticipation des problèmes ?", options: ["Attendre qu'ils arrivent", "Traiter les problèmes avant qu'ils soient critiques", "Ignorer", "Paniquer"], ans: 1 },
             { q: "Le Plan de Management (PMP) est :", options: ["Un document statique", "Un document décrivant comment exécuter et maîtriser", "Un contrat", "Une feuille de calcul"], ans: 1 },
             { q: "La maîtrise des changements inclut :", options: ["Revoir et approuver les modifications", "Refuser tout changement", "Changer tout ce qu'on veut", "Demander au client à la fin"], ans: 0 },
             { q: "La clôture de contrat concerne :", options: ["L'équipe interne", "Le fournisseur externe", "Le café", "Les réunions"], ans: 1 },
@@ -588,7 +590,7 @@ const rawCourseData = {
             { q: "L'effort est-il la même chose que la durée ?", options: ["Oui", "Non (Effort = travail, Durée = temps calendrier)", "C'est pareil", "Dépend du client"], ans: 1 },
             { q: "La date de début au plus tôt est :", options: ["Quand on veut", "Le plus tôt possible après dépendances", "La fin du projet", "Demain"], ans: 1 },
             { q: "La date de fin au plus tard est :", options: ["Hier", "Le plus tard possible sans retarder le projet", "Jamais", "En 2100"], ans: 1 },
-            { q: "Qu'est-ce qu'un jalons ?", options: ["Une voiture", "Un point significatif dans le temps", "Un bug", "Une note"], ans: 1 },
+            { q: "Qu'est-ce qu'un jalon ?", options: ["Une voiture", "Un point significatif dans le temps", "Un bug", "Une note"], ans: 1 },
             { q: "L'estimation ascendante (Bottom-up) est :", options: ["Vite", "Précise mais longue", "Fausse", "Magique"], ans: 1 },
             { q: "L'estimation paramétrique utilise :", options: ["Des sentiments", "Des formules mathématiques", "Des dés", "Un pendule"], ans: 1 },
             { q: "La réserve pour aléas est :", options: ["Le budget de l'équipe", "Pour les risques connus identifiés", "Pour les inconnus inconnus", "Le café"], ans: 1 },
@@ -597,8 +599,8 @@ const rawCourseData = {
             { q: "L'indice de performance des coûts (CPI) est :", options: ["EV / AC", "AC / EV", "PV / EV", "EV / PV"], ans: 0 },
             { q: "Si CPI < 1, le projet est :", options: ["Sous budget", "Au-dessus du budget", "Parfait", "Fini"], ans: 1 },
             { q: "L'écart de délai (SV) est :", options: ["PV - EV", "EV - PV", "AC - EV", "PV - AC"], ans: 0 },
-            { q: "Qu'est-ce que le lissage (Leveling) ?", options: ["Unequer la route", "Ajuster les ressources en cas de surcharge", "Changer la peinture", "Aplatir le papier"], ans: 1 },
-            { q: "Qu'est-ce que le compression (Crashing) ?", options: ["Ecraser le projet", "Ajouter des ressources (coût) pour réduire le temps", "Faire la grève", "Détruire les plans"], ans: 1 },
+            { q: "Qu'est-ce que le lissage (Leveling) ?", options: ["Aplatir la route", "Ajuster les ressources en cas de surcharge", "Changer la peinture", "Aplatir le papier"], ans: 1 },
+            { q: "Qu'est-ce que la compression (Crashing) ?", options: ["Ecraser le projet", "Ajouter des ressources (coût) pour réduire le temps", "Faire la grève", "Détruire les plans"], ans: 1 },
             { q: "Le diagramme de réseau PERT utilise :", options: ["Des cercles et flèches", "Des barres", "Des photos", "Du texte"], ans: 0 },
             { q: "La dépendance Fin-Début (FS) signifie :", options: ["Activité A commence quand B finit", "A finit quand B commence", "A et B commencent ensemble", "A et B finissent ensemble"], ans: 1 },
             { q: "Le Fast Tracking consiste à :", options: ["Courir vite", "Faire des activités en parallèle (risqué)", "Manger vite", "Dormir vite"], ans: 1 },
@@ -656,7 +658,7 @@ const rawCourseData = {
             { q: "Le registre des parties prenantes est :", options: ["Une liste de course", "Un outil pour gérer les acteurs", "Un menu", "Une playlist"], ans: 1 },
             { q: "Pourquoi évaluer les performances de communication ?", options: ["Pour savoir si tout le monde est content", "Pour juger l'équipe", "Pour le fun", "Pour rien"], ans: 0 },
             { q: "La technologie de communication affecte :", options: ["L'humeur du chef", "L'efficacité de la transmission", "Le goût du café", "La couleur des murs"], ans: 1 },
-            { q: "La diffusion (distribute) de l'info inclut :", options: ["Mettre à disposition les parties prenantes", "Les faire payer", "Les enfermer", "Les détruire"], ans: 0 },
+            { q: "La diffusion (distribut) de l'info inclut :", options: ["Mettre à disposition les parties prenantes", "Les faire payer", "Les enfermer", "Les détruire"], ans: 0 },
             { q: "Une barrière psychologique peut être :", options: ["Un mur", "La peur de parler en public", "L'argent", "La vitesse de la lumière"], ans: 1 },
             { q: "Qu'est-ce qu'un conflit de communication ?", options: ["Une guerre", "Un désaccord sur le message", "Un accord", "Un baiser"], ans: 1 },
             { q: "L'objectif final de la communication est :", options: ["Bavarder", "Le succès du projet via une bonne information", "Faire de la politique", "Remplir des boites mail"], ans: 1 }
@@ -664,9 +666,18 @@ const rawCourseData = {
     }
 };
 
-// No expansion logic needed, we have full arrays now
+// Load scores from LocalStorage on Init
+const savedScores = JSON.parse(localStorage.getItem('pmiScores'));
+const appState = { 
+    scores: savedScores || { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 }, 
+    mastery: { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 }, 
+    currentView: 'dashboard' 
+};
 
-const appState = { scores: { 1:0, 2:0, 3:0, 4:0, 5:0 }, mastery: { 1:0, 2:0, 3:0, 4:0, 5:0 }, currentView: 'dashboard' };
+// Helper to save state
+function saveState() {
+    localStorage.setItem('pmiScores', JSON.stringify(appState.scores));
+}
 
 const router = {
     navigate: (viewId, chapterId = null) => {
@@ -770,6 +781,7 @@ const quizEngine = {
     },
     finish: () => {
         appState.scores[chapterController.currentChapter] = quizEngine.score;
+        saveState(); // Persist data
         document.getElementById('view-quiz').classList.remove('active');
         setTimeout(() => {
             document.getElementById('view-quiz').classList.add('hidden');
